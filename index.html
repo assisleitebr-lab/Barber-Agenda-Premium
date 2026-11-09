@@ -1,0 +1,692 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#101010">
+<meta name="description" content="Barber Agenda - Agende seu horário na barbearia.">
+<link rel="manifest" href="manifest.json">
+<title>Barber Agenda</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --bg:#101010;
+ --card:#1b1b1b;
+ --card2:#252525;
+ --gold:#d6ad60;
+ --white:#fff;
+ --muted:#999;
+ --line:#303030;
+}
+body{
+ background:var(--bg);
+ color:var(--white);
+ font-family:Arial,sans-serif;
+ min-height:100vh;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+/* CABEÇALHO */
+.topbar{
+ height:65px;
+ padding:0 18px;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:#151515;
+ border-bottom:1px solid var(--line);
+ position:sticky;
+ top:0;
+ z-index:10;
+}
+.logo{font-size:20px;font-weight:900;letter-spacing:1px}
+.logo span{color:var(--gold)}
+.logo small{
+ display:block;font-size:8px;
+ letter-spacing:3px;color:#888;margin-top:3px;
+}
+.user-icon{
+ width:38px;height:38px;border-radius:50%;
+ background:#3b3020;color:var(--gold);
+ border:1px solid var(--gold);
+ display:grid;place-items:center;font-weight:bold;
+}
+
+/* CONTEÚDO */
+.app{
+ max-width:600px;
+ margin:auto;
+ padding:20px 16px 105px;
+}
+.page{display:none;animation:entrar .25s ease}
+.page.active{display:block}
+@keyframes entrar{
+ from{opacity:0;transform:translateY(7px)}
+ to{opacity:1;transform:translateY(0)}
+}
+.welcome{margin:8px 0 20px}
+.welcome h1{font-size:23px;margin-bottom:6px}
+.welcome p{font-size:13px;color:var(--muted)}
+
+/* BANNER */
+.banner{
+ min-height:190px;
+ border-radius:17px;
+ padding:23px;
+ display:flex;
+ align-items:center;
+ background:
+ linear-gradient(90deg,#090909ed,#09090955),
+ url("https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900") center/cover;
+ border:1px solid #4b3b25;
+ margin-bottom:20px;
+}
+.banner-content{max-width:280px}
+.banner small{color:var(--gold);letter-spacing:2px;font-weight:bold}
+.banner h2{font-size:27px;line-height:1.2;margin:12px 0}
+.banner p{font-size:12px;color:#ddd;line-height:1.5}
+
+/* BOTÕES */
+.btn{
+ border:0;border-radius:10px;
+ padding:14px 18px;font-weight:bold;
+}
+.gold-btn{
+ background:linear-gradient(135deg,#f1d18d,#c39440);
+ color:#17120a;
+}
+.dark-btn{background:#303030;color:white}
+.full{width:100%;margin-top:12px}
+
+/* CARDS */
+.card{
+ background:var(--card);
+ border:1px solid var(--line);
+ border-radius:15px;
+ padding:17px;
+ margin-bottom:15px;
+}
+.section-title{
+ display:flex;justify-content:space-between;
+ align-items:center;margin-bottom:16px;
+}
+.section-title h2{font-size:17px}
+.section-title span{font-size:10px;color:var(--gold)}
+
+/* INDICADORES */
+.stats{
+ display:grid;grid-template-columns:repeat(2,1fr);
+ gap:10px;margin-bottom:19px;
+}
+.stat{
+ background:var(--card);
+ border:1px solid var(--line);
+ border-radius:13px;padding:15px;
+}
+.stat p{font-size:11px;color:var(--muted);margin-bottom:9px}
+.stat strong{font-size:23px;color:var(--gold)}
+
+/* SERVIÇOS */
+.service{
+ display:flex;align-items:center;gap:11px;
+ padding:13px;background:var(--card2);
+ border:1px solid var(--line);
+ border-radius:12px;margin-bottom:10px;
+ cursor:pointer;
+}
+.service.active{border-color:var(--gold);background:#30291e}
+.service-icon{
+ width:43px;height:43px;border-radius:11px;
+ background:#393020;display:grid;place-items:center;
+ font-size:21px;flex-shrink:0;
+}
+.service-info{flex:1;min-width:0}
+.service-info h3{font-size:13px;margin-bottom:5px}
+.service-info p{font-size:10px;color:var(--muted)}
+.service-price{font-size:13px;color:var(--gold);font-weight:bold}
+.service input{accent-color:var(--gold)}
+
+/* DATA E HORÁRIOS */
+.field-label{
+ display:block;font-size:12px;
+ color:#bbb;margin:12px 0 8px;
+}
+input[type=date],input[type=text],
+input[type=email],input[type=password]{
+ width:100%;padding:14px;
+ background:#292929;color:white;
+ border:1px solid #444;border-radius:9px;
+ outline:none;
+}
+.slots{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:9px;margin-top:12px;
+}
+.slot{
+ padding:13px 5px;border-radius:9px;
+ background:#292929;border:1px solid #444;
+ color:white;font-size:13px;
+}
+.slot.selected{background:var(--gold);color:#111;border-color:var(--gold)}
+.slot:disabled{opacity:.3;text-decoration:line-through}
+
+/* PERFIL */
+.profile{text-align:center;padding:25px 17px}
+.profile img{
+ width:105px;height:105px;border-radius:50%;
+ object-fit:cover;border:3px solid var(--gold);
+ margin-bottom:14px;
+}
+.profile h2{font-size:19px;margin-bottom:7px}
+.profile p{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* RESUMO */
+.line{
+ display:flex;justify-content:space-between;
+ padding:12px 0;border-bottom:1px solid var(--line);
+ font-size:13px;gap:10px;
+}
+.line span{color:var(--muted)}
+.total{
+ display:flex;justify-content:space-between;
+ color:var(--gold);font-weight:bold;
+ font-size:20px;padding:16px 0;
+}
+
+/* RESERVAS */
+.reserva{
+ padding:15px;background:var(--card2);
+ border:1px solid var(--line);
+ border-radius:11px;margin-bottom:11px;
+}
+.reserva strong{font-size:14px}
+.reserva p{font-size:12px;color:var(--muted);margin-top:7px}
+.status{
+ display:inline-block;margin-top:10px;
+ color:var(--gold);background:#403322;
+ border-radius:20px;padding:6px 10px;font-size:10px;
+}
+.empty{text-align:center;color:var(--muted);padding:20px;font-size:13px}
+
+/* MENU INFERIOR */
+.bottom-nav{
+ position:fixed;bottom:0;left:0;right:0;
+ height:76px;background:#171717;
+ border-top:1px solid #393939;
+ display:flex;justify-content:space-around;
+ align-items:center;z-index:20;
+ padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-item{
+ flex:1;height:100%;border:0;background:none;
+ color:#888;display:flex;
+ flex-direction:column;align-items:center;
+ justify-content:center;gap:5px;font-size:10px;
+}
+.nav-item .nav-icon{font-size:21px}
+.nav-item.active{color:var(--gold)}
+.nav-item.active .nav-icon{transform:translateY(-2px)}
+
+/* LOGIN */
+.login{
+ max-width:420px;margin:45px auto;
+ padding:22px;
+}
+.login .logo{text-align:center;margin-bottom:25px}
+.login h2{font-size:21px;margin-bottom:8px}
+.login p{font-size:12px;color:var(--muted);margin-bottom:20px}
+footer{text-align:center;color:#666;font-size:10px;padding:20px}
+
+@media(min-width:700px){
+ .app{padding-top:30px}
+ .bottom-nav{
+  max-width:600px;left:50%;transform:translateX(-50%);
+  border:1px solid #393939;border-bottom:0;
+  border-radius:17px 17px 0 0;
+ }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+ <div class="logo">BARBER <span>AGENDA</span>
+  <small>PREMIUM EXPERIENCE</small>
+ </div>
+ <div id="userIcon" class="user-icon hidden">U</div>
+</header>
+
+<!-- LOGIN -->
+<section id="loginPage" class="login card">
+ <div class="logo">BARBER <span>AGENDA</span><small>SEU ESTILO, SEU HORÁRIO</small></div>
+ <h2>Bem-vindo!</h2>
+ <p>Entre para acessar sua barbearia.</p>
+ <label class="field-label">Nome</label>
+ <input id="nome" type="text" placeholder="Seu nome">
+ <label class="field-label">E-mail</label>
+ <input id="email" type="email" placeholder="seu@email.com">
+ <label class="field-label">Senha</label>
+ <input id="senha" type="password" placeholder="Sua senha">
+ <button class="btn gold-btn full" onclick="entrar()">ENTRAR / CADASTRAR</button>
+</section>
+
+<!-- APLICATIVO -->
+<main id="app" class="app hidden">
+
+ <!-- INÍCIO -->
+ <section id="inicio" class="page active">
+  <div class="welcome">
+   <h1>Olá, <span style="color:var(--gold)" id="nomeUsuario">Cliente</span> 👋</h1>
+   <p>Vamos cuidar do seu visual hoje?</p>
+  </div>
+
+  <div class="banner">
+   <div class="banner-content">
+    <small>BARBEARIA PREMIUM</small>
+    <h2>Seu estilo merece o <span style="color:var(--gold)">melhor.</span></h2>
+    <p>Agende seu atendimento de forma rápida e fácil.</p>
+    <button class="btn gold-btn" style="margin-top:16px" onclick="navegar('agendar')">AGENDAR AGORA →</button>
+   </div>
+  </div>
+
+  <div class="stats">
+   <div class="stat"><p>MEUS AGENDAMENTOS</p><strong id="total">0</strong></div>
+   <div class="stat"><p>NOSSA AVALIAÇÃO</p><strong>★ 5.0</strong></div>
+  </div>
+
+  <div class="card">
+   <div class="section-title"><h2>✂ Serviços populares</h2><span>VER TODOS</span></div>
+   <div class="service">
+    <div class="service-icon">✂️</div>
+    <div class="service-info"><h3>Corte masculino</h3><p>40 minutos</p></div>
+    <div class="service-price">R$ 35</div>
+   </div>
+   <div class="service">
+    <div class="service-icon">🪒</div>
+    <div class="service-info"><h3>Barba completa</h3><p>30 minutos</p></div>
+    <div class="service-price">R$ 25</div>
+   </div>
+  </div>
+ </section>
+
+ <!-- AGENDAR -->
+ <section id="agendar" class="page">
+  <div class="welcome">
+   <h1>Novo <span style="color:var(--gold)">agendamento</span></h1>
+   <p>Escolha seu serviço e reserve seu horário.</p>
+  </div>
+
+  <div class="card">
+   <div class="section-title"><h2>01. Serviço</h2><span>ESCOLHA UM</span></div>
+
+   <label class="service active">
+    <div class="service-icon">✂️</div>
+    <div class="service-info"><h3>Corte masculino</h3><p>40 minutos</p></div>
+    <div class="service-price">R$ 35</div>
+    <input type="radio" name="servico" value="Corte masculino" data-preco="35" checked>
+   </label>
+
+   <label class="service">
+    <div class="service-icon">🪒</div>
+    <div class="service-info"><h3>Barba completa</h3><p>30 minutos</p></div>
+    <div class="service-price">R$ 25</div>
+    <input type="radio" name="servico" value="Barba completa" data-preco="25">
+   </label>
+
+   <label class="service">
+    <div class="service-icon">💈</div>
+    <div class="service-info"><h3>Corte + Barba</h3><p>60 minutos</p></div>
+    <div class="service-price">R$ 55</div>
+    <input type="radio" name="servico" value="Corte + Barba" data-preco="55">
+   </label>
+  </div>
+
+  <div class="card">
+   <div class="section-title"><h2>02. Data</h2></div>
+   <label class="field-label">ESCOLHA O DIA</label>
+   <input type="date" id="data" onchange="carregarHorarios()">
+  </div>
+
+  <div class="card">
+   <div class="section-title"><h2>03. Horário</h2><span>DISPONÍVEIS</span></div>
+   <div id="horarios" class="slots">
+    <p class="empty">Escolha uma data primeiro.</p>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="section-title"><h2>04. Resumo</h2></div>
+   <div class="line"><span>Serviço</span><strong id="resServico">Corte masculino</strong></div>
+   <div class="line"><span>Data</span><strong id="resData">--/--/----</strong></div>
+   <div class="line"><span>Horário</span><strong id="resHora">--:--</strong></div>
+   <div class="total"><span>Total</span><span id="resPreco">R$ 35,00</span></div>
+   <button class="btn gold-btn full" onclick="agendar()">CONFIRMAR RESERVA</button>
+  </div>
+ </section>
+
+ <!-- RESERVAS -->
+ <section id="reservas" class="page">
+  <div class="welcome">
+   <h1>Minhas <span style="color:var(--gold)">reservas</span></h1>
+   <p>Acompanhe seus próximos atendimentos.</p>
+  </div>
+  <div class="card">
+   <div id="listaReservas"><p class="empty">Nenhuma reserva encontrada.</p></div>
+  </div>
+ </section>
+
+ <!-- PERFIL -->
+ <section id="perfil" class="page">
+  <div class="welcome">
+   <h1>Meu <span style="color:var(--gold)">perfil</span></h1>
+   <p>Suas informações e sua barbearia.</p>
+  </div>
+
+  <div class="card profile">
+   <div class="user-icon" style="margin:auto auto 15px;width:75px;height:75px;font-size:25px" id="profileAvatar">U</div>
+   <h2 id="profileName">Cliente</h2>
+   <p id="profileEmail">email@email.com</p>
+  </div>
+
+  <div class="card">
+   <div class="section-title"><h2>💈 Sobre a barbearia</h2></div>
+   <p style="font-size:13px;color:#aaa;line-height:1.8">
+    Atendimento profissional, cortes modernos e cuidado em cada detalhe.
+    <br><br>
+    <span style="color:var(--gold)">●</span> Segunda a sábado<br>
+    <span style="color:var(--gold)">●</span> 08h às 19h<br>
+    <span style="color:var(--gold)">●</span> Atendimento agendado
+   </p>
+  </div>
+
+  <button class="btn dark-btn full" onclick="sair()">SAIR DA CONTA</button>
+ </section>
+
+</main>
+
+<!-- MENU MOBILE -->
+<nav class="bottom-nav hidden" id="menu">
+ <button class="nav-item active" onclick="navegar('inicio',this)">
+  <span class="nav-icon">⌂</span>Início
+ </button>
+ <button class="nav-item" onclick="navegar('agendar',this)">
+  <span class="nav-icon">＋</span>Agendar
+ </button>
+ <button class="nav-item" onclick="navegar('reservas',this)">
+  <span class="nav-icon">▣</span>Reservas
+ </button>
+ <button class="nav-item" onclick="navegar('perfil',this)">
+  <span class="nav-icon">♙</span>Perfil
+ </button>
+</nav>
+
+<footer>BARBER AGENDA PREMIUM © 2026</footer>
+
+<script>
+const PAYMENT_API_URL="";
+const horarios=[
+ "08:00","09:00","10:00","11:00",
+ "13:00","14:00","15:00","16:00","17:00","18:00"
+];
+
+let usuario=null;
+let horarioSelecionado=null;
+let dataSelecionada=null;
+
+const $=id=>document.getElementById(id);
+
+function entrar(){
+ const nome=$("nome").value.trim();
+ const email=$("email").value.trim().toLowerCase();
+ const senha=$("senha").value;
+
+ if(!nome||!email||!senha){
+  alert("Preencha todos os campos.");
+  return;
+ }
+ if(!email.includes("@")||senha.length<4){
+  alert("Confira o e-mail e a senha.");
+  return;
+ }
+
+ // Demonstração local, não é autenticação segura.
+ const contas=JSON.parse(localStorage.getItem("barberContas")||"{}");
+
+ if(contas[email]&&contas[email].senha!==senha){
+  alert("Senha incorreta.");
+  return;
+ }
+
+ if(!contas[email]){
+  contas[email]={nome,senha};
+  localStorage.setItem("barberContas",JSON.stringify(contas));
+ }
+
+ usuario={nome:contas[email].nome,email};
+ localStorage.setItem("barberUsuario",JSON.stringify(usuario));
+ abrirApp();
+}
+
+function abrirApp(){
+ $("loginPage").classList.add("hidden");
+ $("app").classList.remove("hidden");
+ $("menu").classList.remove("hidden");
+ $("userIcon").classList.remove("hidden");
+
+ const primeiro=usuario.nome.split(" ")[0];
+ $("nomeUsuario").textContent=primeiro;
+ $("profileName").textContent=usuario.nome;
+ $("profileEmail").textContent=usuario.email;
+
+ const inicial=usuario.nome.charAt(0).toUpperCase();
+ $("userIcon").textContent=inicial;
+ $("profileAvatar").textContent=inicial;
+
+ listarReservas();
+}
+
+function navegar(pagina,botao){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ $(pagina).classList.add("active");
+
+ document.querySelectorAll(".nav-item").forEach(b=>b.classList.remove("active"));
+ if(botao)botao.classList.add("active");
+ else{
+  const botoes=document.querySelectorAll(".nav-item");
+  const indice={inicio:0,agendar:1,reservas:2,perfil:3}[pagina];
+  botoes[indice].classList.add("active");
+ }
+
+ window.scrollTo({top:0,behavior:"smooth"});
+ if(pagina==="reservas")listarReservas();
+}
+
+function sair(){
+ localStorage.removeItem("barberUsuario");
+ usuario=null;
+ $("app").classList.add("hidden");
+ $("menu").classList.add("hidden");
+ $("userIcon").classList.add("hidden");
+ $("loginPage").classList.remove("hidden");
+}
+
+function servico(){
+ const s=document.querySelector('input[name="servico"]:checked');
+ return {nome:s.value,preco:Number(s.dataset.preco)};
+}
+
+function atualizarServico(){
+ const s=servico();
+ $("resServico").textContent=s.nome;
+ $("resPreco").textContent="R$ "+s.preco.toFixed(2).replace(".",",");
+
+ document.querySelectorAll("#agendar .service").forEach(card=>{
+  card.classList.toggle("active",card.querySelector("input").checked);
+ });
+}
+
+document.querySelectorAll('input[name="servico"]').forEach(el=>{
+ el.addEventListener("change",atualizarServico);
+});
+
+function carregarHorarios(){
+ dataSelecionada=$("data").value;
+ horarioSelecionado=null;
+ $("resHora").textContent="--:--";
+ $("resData").textContent=dataSelecionada?
+  dataSelecionada.split("-").reverse().join("/"):"--/--/----";
+
+ $("horarios").innerHTML="";
+ if(!dataSelecionada)return;
+
+ const data=new Date(dataSelecionada+"T12:00:00");
+ const hoje=new Date();
+ hoje.setHours(0,0,0,0);
+
+ if(data<hoje||data.getDay()===0){
+  $("horarios").innerHTML='<p class="empty">Escolha uma data futura de segunda a sábado.</p>';
+  return;
+ }
+
+ const reservas=JSON.parse(localStorage.getItem("barberReservas")||"[]");
+
+ horarios.forEach(hora=>{
+  const ocupado=reservas.some(r=>
+   r.data===dataSelecionada&&r.hora===hora&&r.status!=="Cancelado"
+  );
+
+  const btn=document.createElement("button");
+  btn.className="slot";
+  btn.textContent=hora;
+  btn.disabled=ocupado;
+
+  btn.onclick=()=>{
+   document.querySelectorAll(".slot").forEach(b=>b.classList.remove("selected"));
+   btn.classList.add("selected");
+   horarioSelecionado=hora;
+   $("resHora").textContent=hora;
+  };
+
+  $("horarios").appendChild(btn);
+ });
+}
+
+function agendar(){
+ if(!usuario)return;
+
+ if(!dataSelecionada||!horarioSelecionado){
+  alert("Escolha a data e o horário.");
+  return;
+ }
+
+ const data=new Date(dataSelecionada+"T12:00:00");
+ const hoje=new Date();
+ hoje.setHours(0,0,0,0);
+
+ if(data<hoje||data.getDay()===0){
+  alert("Data inválida.");
+  return;
+ }
+
+ const s=servico();
+ const reservas=JSON.parse(localStorage.getItem("barberReservas")||"[]");
+
+ if(reservas.some(r=>
+  r.data===dataSelecionada&&r.hora===horarioSelecionado&&r.status!=="Cancelado"
+ )){
+  alert("Este horário já está reservado.");
+  carregarHorarios();
+  return;
+ }
+
+ const reserva={
+  id:Date.now(),
+  nome:usuario.nome,
+  email:usuario.email,
+  servico:s.nome,
+  preco:s.preco,
+  data:dataSelecionada,
+  hora:horarioSelecionado,
+  status:"Aguardando pagamento"
+ };
+
+ reservas.push(reserva);
+ localStorage.setItem("barberReservas",JSON.stringify(reservas));
+
+ listarReservas();
+ carregarHorarios();
+
+ alert("Reserva demonstrativa criada com sucesso!");
+ navegar("reservas");
+}
+
+function listarReservas(){
+ if(!usuario)return;
+
+ const todas=JSON.parse(localStorage.getItem("barberReservas")||"[]");
+ const minhas=todas.filter(r=>r.email===usuario.email&&r.status!=="Cancelado");
+
+ $("total").textContent=minhas.length;
+ $("listaReservas").innerHTML="";
+
+ if(!minhas.length){
+  $("listaReservas").innerHTML='<p class="empty">Você ainda não possui reservas.</p>';
+  return;
+ }
+
+ minhas.forEach(r=>{
+  const card=document.createElement("div");
+  card.className="reserva";
+
+  const titulo=document.createElement("strong");
+  titulo.textContent="✂ "+r.servico;
+
+  const info=document.createElement("p");
+  info.textContent=r.data.split("-").reverse().join("/")+
+   " • "+r.hora+" • R$ "+r.preco.toFixed(2).replace(".",",");
+
+  const status=document.createElement("span");
+  status.className="status";
+  status.textContent=r.status;
+
+  const cancelar=document.createElement("button");
+  cancelar.className="btn dark-btn full";
+  cancelar.textContent="Cancelar reserva";
+
+  cancelar.onclick=()=>{
+   if(!confirm("Deseja cancelar esta reserva?"))return;
+
+   const atualizadas=todas.map(x=>
+    x.id===r.id?{...x,status:"Cancelado"}:x
+   );
+
+   localStorage.setItem("barberReservas",JSON.stringify(atualizadas));
+   listarReservas();
+   carregarHorarios();
+  };
+
+  card.append(titulo,info,status,cancelar);
+  $("listaReservas").appendChild(card);
+ });
+}
+
+$("data").min=new Date().toLocaleDateString("en-CA");
+
+const sessao=localStorage.getItem("barberUsuario");
+if(sessao){
+ try{
+  usuario=JSON.parse(sessao);
+  if(usuario&&usuario.email)abrirApp();
+ }catch(e){
+  localStorage.removeItem("barberUsuario");
+ }
+}
+</script>
+
+</body>
+</html>
