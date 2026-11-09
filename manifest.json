@@ -1,14 +1,13 @@
-
 {
-  "name": "Barber Agenda Premium",
-  "short_name": "Barber Agenda",
-  "description": "Agendamento profissional para barbearia",
+  "name": "Barber Agenda",
+  "short_name": "Barber",
+  "description": "Aplicativo de agendamento para barbearia",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#101010",
-  "theme_color": "#101010",
+  "background_color": "#07111f",
+  "theme_color": "#071a33",
   "icons": [
     {
       "src": "./icon-192.png",
