@@ -13,6 +13,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
+<!-- Firebase SDKs (Compat v10) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 <style>
 :root {
   --bg-body: #06090f;
@@ -472,7 +476,7 @@ main { padding: 18px; }
     <div class="pix-box">
       <div>
         <strong style="color:var(--success);display:block">Pagamento via Pix disponível</strong>
-        <span style="color:var(--text-muted)">Chave: pix@barberagenda.com.br</span>
+        <span style="color:var(--text-muted)">Chave: pix@barbeariag3.com.br</span>
       </div>
       <button type="button" class="btn-sec" onclick="copiarPix()">Copiar</button>
     </div>
@@ -482,14 +486,14 @@ main { padding: 18px; }
   </div>
 </section>
 
-<!-- TELA MINHAS RESERVAS (VISÃO PRIVADA DO CLIENTE) -->
+<!-- TELA MINHAS RESERVAS -->
 <section id="reservas" class="tela oculta">
   <h2 class="titulo">Meus agendamentos</h2>
   <p style="font-size:12px;color:var(--text-muted);margin-top:-8px">Exibindo apenas os horários vinculados ao seu perfil.</p>
   <div id="lista-reservas"></div>
 </section>
 
-<!-- TELA PAINEL & GRÁFICOS (VISÃO ADMIN/BARBEIRO) -->
+<!-- TELA PAINEL & GRÁFICOS (ADMIN) -->
 <section id="admin" class="tela oculta">
   <h2 class="titulo">Desempenho & Agenda Geral</h2>
   
@@ -507,7 +511,7 @@ main { padding: 18px; }
   <div class="grafico-box">
     <div class="grafico-header">
       <span>Faturamento por Barbeiro</span>
-      <small>Atualizado em tempo real</small>
+      <small>Tempo real (Firebase)</small>
     </div>
     <div id="grafico-svg"></div>
   </div>
@@ -545,13 +549,39 @@ main { padding: 18px; }
 (function(){
 "use strict";
 
+// CONFIGURAÇÃO DO FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyBGZKFzBlKSR_aBKDIGZSfYYHbGFFv5zJo",
+  authDomain: "barbearia-bairro-g3.firebaseapp.com",
+  projectId: "barbearia-bairro-g3",
+  storageBucket: "barbearia-bairro-g3.firebasestorage.app",
+  messagingSenderId: "216357579610",
+  appId: "1:216357579610:web:24a579bb2238d1f1032163",
+  measurementId: "G-GT2GZHR6SB"
+};
+
+// Inicializa Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const horarios = ["09:00","09:30","10:00","10:30","11:00","11:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","18:00","18:30"];
 let horarioEscolhido = "";
+let reservasCache = [];
 
-function lerReservas() {
-  try { return JSON.parse(localStorage.getItem("barberReservas") || "[]"); }
-  catch(e) { return []; }
-}
+// Ouve mudanças no Firestore em tempo real
+db.collection("reservas").onSnapshot((snapshot) => {
+  reservasCache = [];
+  snapshot.forEach((doc) => {
+    reservasCache.push({ firestoreId: doc.id, ...doc.data() });
+  });
+  // Atualiza as telas ativas automaticamente caso dados mudem na nuvem
+  const telaAtual = document.querySelector(".tela:not(.oculta)").id;
+  if (telaAtual === "agendar") mostrarHorarios();
+  if (telaAtual === "reservas") mostrarReservasCliente();
+  if (telaAtual === "admin") renderizarAdmin();
+}, (error) => {
+  console.error("Erro ao sincronizar com Firebase:", error);
+});
 
 function lerPerfil() {
   try { return JSON.parse(localStorage.getItem("barberPerfil") || "{}"); }
@@ -567,8 +597,8 @@ window.mensagem = function(texto) {
 };
 
 window.copiarPix = function() {
-  navigator.clipboard?.writeText("pix@barberagenda.com.br");
-  mensagem("Chave Pix copiada: pix@barberagenda.com.br");
+  navigator.clipboard?.writeText("pix@barbeariag3.com.br");
+  mensagem("Chave Pix copiada!");
 };
 
 window.abrirTela = function(id) {
@@ -599,7 +629,7 @@ function preencherDadosCliente() {
 function mostrarHorarios() {
   const data = document.getElementById("data").value;
   const barbeiro = document.getElementById("barbeiro").value;
-  const ocupados = lerReservas().filter(r => r.data === data && r.barbeiro === barbeiro).map(r => r.horario);
+  const ocupados = reservasCache.filter(r => r.data === data && r.barbeiro === barbeiro).map(r => r.horario);
   const lista = document.getElementById("lista-horarios");
   lista.innerHTML = "";
   horarios.forEach(h => {
@@ -630,15 +660,14 @@ window.confirmarAgendamento = function() {
   }
 
   const partes = document.getElementById("servico").value.split("|");
-  const reservas = lerReservas();
 
-  if (reservas.some(r => r.data === data && r.horario === horarioEscolhido && r.barbeiro === barbeiro)) {
-    mensagem("Esse horário já foi reservado.");
+  if (reservasCache.some(r => r.data === data && r.horario === horarioEscolhido && r.barbeiro === barbeiro)) {
+    mensagem("Esse horário já foi reservado por outra pessoa.");
     mostrarHorarios();
     return;
   }
 
-  reservas.push({
+  const novoAgendamento = {
     id: Date.now(),
     nome: nome,
     telefone: telefone,
@@ -648,22 +677,25 @@ window.confirmarAgendamento = function() {
     preco: Number(partes[1]),
     barbeiro: barbeiro,
     pago: false
-  });
+  };
 
-  localStorage.setItem("barberReservas", JSON.stringify(reservas));
-  localStorage.setItem("barberPerfil", JSON.stringify({ nome, telefone }));
-  document.getElementById("nome-perfil").value = nome;
-  document.getElementById("telefone-perfil").value = telefone;
-  horarioEscolhido = "";
-  mensagem("Agendamento confirmado!");
-  abrirTela("reservas");
+  db.collection("reservas").add(novoAgendamento).then(() => {
+    localStorage.setItem("barberPerfil", JSON.stringify({ nome, telefone }));
+    document.getElementById("nome-perfil").value = nome;
+    document.getElementById("telefone-perfil").value = telefone;
+    horarioEscolhido = "";
+    mensagem("Agendamento salvo na nuvem com sucesso!");
+    abrirTela("reservas");
+  }).catch((err) => {
+    console.error(err);
+    mensagem("Erro ao salvar no Firebase. Verifique a conexão.");
+  });
 };
 
-// Isolamento de privacidade: mostra apenas agendamentos do cliente atual
 function mostrarReservasCliente() {
   const caixa = document.getElementById("lista-reservas");
   const perfil = lerPerfil();
-  const todas = lerReservas().sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
+  const todas = [...reservasCache].sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
   
   const minhas = perfil.telefone 
     ? todas.filter(r => r.telefone === perfil.telefone)
@@ -681,15 +713,13 @@ function mostrarReservasCliente() {
   });
 }
 
-// Visão Administrativa + Gráfico SVG
 function renderizarAdmin() {
-  const reservas = lerReservas().sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
+  const reservas = [...reservasCache].sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
   const receita = reservas.reduce((acc, r) => acc + (r.pago ? r.preco : 0), 0);
   
   document.getElementById("kpi-receita").textContent = receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   document.getElementById("kpi-qtd").textContent = reservas.length;
 
-  // Dados para o gráfico
   const equipe = ["Lucas Silva", "Rafael Santos", "Diego Almeida"];
   const totais = equipe.map(b => reservas.filter(r => r.barbeiro === b).reduce((s, r) => s + r.preco, 0));
   const maxVal = Math.max(...totais, 100);
@@ -746,26 +776,30 @@ function criarCardReserva(r, isAdmin) {
     <p><i data-lucide="scissors" size="14"></i> Barbeiro: ${r.barbeiro}</p>
     ${isAdmin ? `<p><i data-lucide="user" size="14"></i> Cliente: ${r.nome} (${r.telefone})</p>` : ""}
     <div class="reserva-acoes">
-      ${isAdmin ? `<button class="btn-sec" onclick="alternarPix(${r.id})">${r.pago ? "Marcar Pendente" : "Confirmar Pix"}</button>` : ""}
-      <button class="btn-danger" onclick="cancelarReserva(${r.id}, ${isAdmin})">Cancelar</button>
+      ${isAdmin ? `<button class="btn-sec" onclick="alternarPix('${r.firestoreId}', ${r.pago})">${r.pago ? "Marcar Pendente" : "Confirmar Pix"}</button>` : ""}
+      <button class="btn-danger" onclick="cancelarReserva('${r.firestoreId}')">Cancelar</button>
     </div>
   `;
   setTimeout(() => lucide.createIcons(), 0);
   return card;
 }
 
-window.alternarPix = function(id) {
-  const lista = lerReservas().map(r => r.id === id ? { ...r, pago: !r.pago } : r);
-  localStorage.setItem("barberReservas", JSON.stringify(lista));
-  renderizarAdmin();
-  mensagem("Status de pagamento atualizado!");
+window.alternarPix = function(firestoreId, statusAtual) {
+  db.collection("reservas").doc(firestoreId).update({
+    pago: !statusAtual
+  }).then(() => {
+    mensagem("Status de pagamento atualizado!");
+  }).catch((err) => {
+    mensagem("Erro ao atualizar pagamento.");
+  });
 };
 
-window.cancelarReserva = function(id, isAdmin) {
-  const novaLista = lerReservas().filter(item => item.id !== id);
-  localStorage.setItem("barberReservas", JSON.stringify(novaLista));
-  isAdmin ? renderizarAdmin() : mostrarReservasCliente();
-  mensagem("Agendamento cancelado.");
+window.cancelarReserva = function(firestoreId) {
+  db.collection("reservas").doc(firestoreId).delete().then(() => {
+    mensagem("Agendamento cancelado.");
+  }).catch((err) => {
+    mensagem("Erro ao cancelar agendamento.");
+  });
 };
 
 window.salvarPerfil = function() {
