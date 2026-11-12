@@ -272,7 +272,7 @@ main { padding: 18px; }
 .atalho i { color: var(--primary-light); }
 .atalho:hover { border-color: var(--primary-light); background: rgba(59, 32, 84, 0.7); box-shadow: 0 0 12px rgba(219,39,119,0.2); }
 
-/* Barbeiros/Manicures */
+/* Profissionais */
 .barbeiros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .barbeiro {
   background: var(--bg-card);
@@ -498,7 +498,7 @@ main { padding: 18px; }
     
     <div id="menu-usuario" class="menu-usuario oculta">
       <button onclick="abrirTela('perfil'); fecharMenuUsuario()"><i data-lucide="user-check" size="16"></i> Meu Perfil</button>
-      <button onclick="solicitarLoginBarbeiro()"><i data-lucide="sparkles" size="16"></i> Login Profissional</button>
+      <button onclick="fazerLoginBarbeiroPrompt()"><i data-lucide="sparkles" size="16"></i> Login Profissional</button>
       <button onclick="solicitarSenhaAdmin()"><i data-lucide="shield-check" size="16"></i> Login Admin</button>
     </div>
   </div>
@@ -533,20 +533,6 @@ main { padding: 18px; }
     <div class="resumo"><span>Pedicure simples</span><strong>R$ 35,00</strong></div>
     <div class="resumo"><span>Combo Manicure + Pedicure</span><strong>R$ 60,00</strong></div>
     <div class="resumo"><span>Unhas em Gel / Acrigel</span><strong>R$ 100,00</strong></div>
-  </div>
-</section>
-
-<!-- TELA DE LOGIN DO PROFISSIONAL -->
-<section id="login-barbeiro" class="tela oculta">
-  <h2 class="titulo">Área da Profissional</h2>
-  <div class="painel">
-    <label class="rotulo" for="login-nome-barbeiro">Seu Nome (Ex: Ana Paula, Mariana Costa)</label>
-    <input class="campo" id="login-nome-barbeiro" placeholder="Nome exato da profissional">
-
-    <label class="rotulo" for="login-senha-barbeiro">Sua Senha</label>
-    <input class="campo" id="login-senha-barbeiro" type="password" placeholder="Senha (padrão: 123)">
-
-    <button class="btn btn-largo" style="margin-top:16px" onclick="fazerLoginBarbeiro()"><i data-lucide="log-in" size="18"></i> Entrar no Painel</button>
   </div>
 </section>
 
@@ -587,7 +573,7 @@ main { padding: 18px; }
 
     <div class="resumo" style="margin-top:12px"><span>Total a pagar</span><strong id="preco" style="color:var(--primary-light);font-size:18px">R$ 30,00</strong></div>
     
-    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar & Enviar WhatsApp</button>
+    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar Agendamento</button>
   </div>
 </section>
 
@@ -869,32 +855,27 @@ window.addEventListener("click", () => {
   if (menu) menu.classList.add("oculta");
 });
 
-window.fazerLoginBarbeiro = function() {
-  const nomeInput = document.getElementById("login-nome-barbeiro").value.trim().toLowerCase();
-  const senhaInput = document.getElementById("login-senha-barbeiro").value.trim();
-
-  if (!nomeInput || !senhaInput) {
-    mensagem("Preencha o nome e a senha.");
-    return;
-  }
-
+window.fazerLoginBarbeiroPrompt = function() {
+  fecharMenuUsuario();
+  const nomeBarbeiro = prompt("Digite o seu nome de Profissional:");
+  if (!nomeBarbeiro) return;
+  
   const equipe = lerBarbeiros();
-  const barbeiroEncontrado = equipe.find(b => b.nome.trim().toLowerCase() === nomeInput);
-
+  const barbeiroEncontrado = equipe.find(b => b.nome.trim().toLowerCase() === nomeBarbeiro.trim().toLowerCase());
+  
   if (!barbeiroEncontrado) {
-    mensagem("Profissional não encontrada! Verifique o nome.");
+    mensagem("Profissional não encontrada!");
     return;
   }
 
+  const senhaInformada = prompt(`Digite a senha para ${barbeiroEncontrado.nome}:`);
   const senhaCorreta = barbeiroEncontrado.senha || "123";
 
-  if (senhaInput === senhaCorreta) {
+  if (senhaInformada === senhaCorreta) {
     barbeiroLogadoNome = barbeiroEncontrado.nome;
-    document.getElementById("login-nome-barbeiro").value = "";
-    document.getElementById("login-senha-barbeiro").value = "";
     abrirTela("painel-barbeiro");
     mensagem(`Bem-vinda, ${barbeiroEncontrado.nome}!`);
-  } else {
+  } else if (senhaInformada !== null) {
     mensagem("Senha incorreta!");
   }
 };
@@ -1044,11 +1025,11 @@ window.confirmarAgendamento = function() {
     const dataFormatada = data.split("-").reverse().join("/");
     const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     
+    // Envio automático para o WhatsApp do Administrador Diassis Leite
     const textoWp = `Olá Diassis Leite! Novo agendamento no Nails Agenda:%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Profissional:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
-    
     window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=${textoWp}`, '_blank');
 
-    mensagem("Agendamento salvo e enviado para o ADM!");
+    mensagem("Agendamento confirmado com sucesso!");
     abrirTela("reservas");
   }).catch((err) => {
     console.error(err);
