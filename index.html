@@ -487,13 +487,12 @@ main { padding: 18px; }
 <header class="topo">
   <div class="logo"><i data-lucide="scissors" style="color:var(--gold)"></i> BARBER <span>AGENDA</span></div>
   
-  <!-- MENU DO BONEQUINHO -->
+  <!-- MENU DO BONEQUINHO (Apenas Login Barbeiro e Login Admin) -->
   <div style="position:relative;">
     <button class="icone-btn" onclick="toggleMenuUsuario(event)" title="Menu do Usuário"><i data-lucide="user"></i></button>
     
     <div id="menu-usuario" class="menu-usuario oculta">
       <button onclick="abrirTela('perfil'); fecharMenuUsuario()"><i data-lucide="user-check" size="16"></i> Meu Perfil</button>
-      <button onclick="abrirTela('inicio'); fecharMenuUsuario()"><i data-lucide="users" size="16"></i> Barbeiros do Salão</button>
       <button onclick="solicitarLoginBarbeiro()"><i data-lucide="scissors" size="16"></i> Login Barbeiro</button>
       <button onclick="solicitarSenhaAdmin()"><i data-lucide="shield-check" size="16"></i> Login Admin</button>
     </div>
@@ -580,7 +579,7 @@ main { padding: 18px; }
   <div id="lista-reservas"></div>
 </section>
 
-<!-- TELA PAINEL DO BARBEIRO -->
+<!-- TELA PAINEL DO BARBEIRO (Aba exclusiva para ver agendamentos, chat e excluir) -->
 <section id="painel-barbeiro" class="tela oculta">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <div>
@@ -610,7 +609,7 @@ main { padding: 18px; }
     <input class="campo" id="adm-esp-barbeiro" placeholder="Ex: ★ 5.0 · Barba & Cabelo">
 
     <label class="rotulo" for="adm-senha-barbeiro">Senha de Acesso do Barbeiro</label>
-    <input class="campo" id="adm-senha-barbeiro" type="password" placeholder="Ex: 123456">
+    <input class="campo" id="adm-senha-barbeiro" type="password" placeholder="Ex: 123">
 
     <label class="rotulo">Foto do Barbeiro</label>
     <div style="display:flex; gap:8px; align-items:center;">
@@ -701,7 +700,8 @@ let barbeiroLogadoNome = "";
 const equipePadrao = [
   { nome: "Lucas Silva", especialidade: "★ 4.9 · Degradê", senha: "123", foto: "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&w=400&q=80" },
   { nome: "Rafael Santos", especialidade: "★ 4.8 · Clássico", senha: "123", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" },
-  { nome: "Diego Almeida", especialidade: "★ 4.9 · Barba", senha: "123", foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" }
+  { nome: "Diego Almeida", especialidade: "★ 4.9 · Barba", senha: "123", foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" },
+  { nome: "Neto Barbeiro", especialidade: "★ 5.0 · Social", senha: "123", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" }
 ];
 
 function lerBarbeiros() {
