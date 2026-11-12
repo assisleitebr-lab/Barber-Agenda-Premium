@@ -498,7 +498,7 @@ main { padding: 18px; }
     
     <div id="menu-usuario" class="menu-usuario oculta">
       <button onclick="abrirTela('perfil'); fecharMenuUsuario()"><i data-lucide="user-check" size="16"></i> Meu Perfil</button>
-      <button onclick="fazerLoginBarbeiroPrompt()"><i data-lucide="sparkles" size="16"></i> Login Profissional</button>
+      <button onclick="abrirTela('login-barbeiro'); fecharMenuUsuario()"><i data-lucide="sparkles" size="16"></i> Login Profissional</button>
       <button onclick="solicitarSenhaAdmin()"><i data-lucide="shield-check" size="16"></i> Login Admin</button>
     </div>
   </div>
@@ -533,6 +533,20 @@ main { padding: 18px; }
     <div class="resumo"><span>Pedicure simples</span><strong>R$ 35,00</strong></div>
     <div class="resumo"><span>Combo Manicure + Pedicure</span><strong>R$ 60,00</strong></div>
     <div class="resumo"><span>Unhas em Gel / Acrigel</span><strong>R$ 100,00</strong></div>
+  </div>
+</section>
+
+<!-- TELA DE LOGIN DA PROFISSIONAL (Substituiu o prompt) -->
+<section id="login-barbeiro" class="tela oculta">
+  <h2 class="titulo">Área da Profissional</h2>
+  <div class="painel">
+    <label class="rotulo" for="login-nome-barbeiro">Nome da Profissional (Ex: Ana Paula)</label>
+    <input class="campo" id="login-nome-barbeiro" placeholder="Nome exato cadastrado">
+
+    <label class="rotulo" for="login-senha-barbeiro">Senha</label>
+    <input class="campo" id="login-senha-barbeiro" type="password" placeholder="Digite sua senha (padrão: 123)">
+
+    <button class="btn btn-largo" style="margin-top:16px" onclick="fazerLoginProfissional()"><i data-lucide="log-in" size="18"></i> Entrar no Painel</button>
   </div>
 </section>
 
@@ -692,7 +706,9 @@ const firebaseConfig = {
   measurementId: "G-GT2GZHR6SB"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const db = firebase.firestore();
 
 const NUMERO_ADM = "5584988109171";
@@ -855,27 +871,32 @@ window.addEventListener("click", () => {
   if (menu) menu.classList.add("oculta");
 });
 
-window.fazerLoginBarbeiroPrompt = function() {
-  fecharMenuUsuario();
-  const nomeBarbeiro = prompt("Digite o seu nome de Profissional:");
-  if (!nomeBarbeiro) return;
-  
+window.fazerLoginProfissional = function() {
+  const nomeInput = document.getElementById("login-nome-barbeiro").value.trim().toLowerCase();
+  const senhaInput = document.getElementById("login-senha-barbeiro").value.trim();
+
+  if (!nomeInput || !senhaInput) {
+    mensagem("Preencha o nome e a senha.");
+    return;
+  }
+
   const equipe = lerBarbeiros();
-  const barbeiroEncontrado = equipe.find(b => b.nome.trim().toLowerCase() === nomeBarbeiro.trim().toLowerCase());
-  
-  if (!barbeiroEncontrado) {
+  const encontrada = equipe.find(b => b.nome.trim().toLowerCase() === nomeInput);
+
+  if (!encontrada) {
     mensagem("Profissional não encontrada!");
     return;
   }
 
-  const senhaInformada = prompt(`Digite a senha para ${barbeiroEncontrado.nome}:`);
-  const senhaCorreta = barbeiroEncontrado.senha || "123";
+  const senhaCorreta = encontrada.senha || "123";
 
-  if (senhaInformada === senhaCorreta) {
-    barbeiroLogadoNome = barbeiroEncontrado.nome;
+  if (senhaInput === senhaCorreta) {
+    barbeiroLogadoNome = encontrada.nome;
+    document.getElementById("login-nome-barbeiro").value = "";
+    document.getElementById("login-senha-barbeiro").value = "";
     abrirTela("painel-barbeiro");
-    mensagem(`Bem-vinda, ${barbeiroEncontrado.nome}!`);
-  } else if (senhaInformada !== null) {
+    mensagem(`Bem-vinda, ${encontrada.nome}!`);
+  } else {
     mensagem("Senha incorreta!");
   }
 };
@@ -896,7 +917,9 @@ db.collection("reservas_nails").onSnapshot((snapshot) => {
   snapshot.forEach((doc) => {
     reservasCache.push({ firestoreId: doc.id, ...doc.data() });
   });
-  const telaAtual = document.querySelector(".tela:not(.oculta)").id;
+  const telaAtiva = document.querySelector(".tela:not(.oculta)");
+  if (!telaAtiva) return;
+  const telaAtual = telaAtiva.id;
   if (telaAtual === "agendar") mostrarHorarios();
   if (telaAtual === "reservas") mostrarReservasCliente();
   if (telaAtual === "admin") renderizarAdmin();
@@ -912,6 +935,7 @@ function lerPerfil() {
 
 window.mensagem = function(texto) {
   const caixa = document.getElementById("mensagem");
+  if (!caixa) return;
   caixa.textContent = texto;
   caixa.hidden = false;
   clearTimeout(window.timerMensagem);
@@ -931,7 +955,8 @@ window.abrirChatCliente = function(telefone, nomeCliente) {
 
 window.abrirTela = function(id) {
   document.querySelectorAll(".tela").forEach(t => t.classList.add("oculta"));
-  document.getElementById(id).classList.remove("oculta");
+  const alvo = document.getElementById(id);
+  if (alvo) alvo.classList.remove("oculta");
   
   document.querySelectorAll(".nav button").forEach(b => {
     b.classList.toggle("ativo", b.dataset.tela === id);
@@ -955,19 +980,26 @@ window.abrirTela = function(id) {
 
 function preencherDadosCliente() {
   const perfil = lerPerfil();
-  if (perfil.nome && !document.getElementById("cliente").value) {
-    document.getElementById("cliente").value = perfil.nome;
+  const campoCliente = document.getElementById("cliente");
+  const campoTelefone = document.getElementById("telefone");
+  if (perfil.nome && campoCliente && !campoCliente.value) {
+    campoCliente.value = perfil.nome;
   }
-  if (perfil.telefone && !document.getElementById("telefone").value) {
-    document.getElementById("telefone").value = perfil.telefone;
+  if (perfil.telefone && campoTelefone && !campoTelefone.value) {
+    campoTelefone.value = perfil.telefone;
   }
 }
 
 function mostrarHorarios() {
-  const data = document.getElementById("data").value;
-  const barbeiro = document.getElementById("barbeiro").value;
-  const ocupados = reservasCache.filter(r => r.data === data && r.barbeiro === barbeiro).map(r => r.horario);
+  const inputData = document.getElementById("data");
+  const selectBarbeiro = document.getElementById("barbeiro");
   const lista = document.getElementById("lista-horarios");
+  if (!inputData || !selectBarbeiro || !lista) return;
+
+  const data = inputData.value;
+  const barbeiro = selectBarbeiro.value;
+  const ocupados = reservasCache.filter(r => r.data === data && r.barbeiro === barbeiro).map(r => r.horario);
+  
   lista.innerHTML = "";
   horarios.forEach(h => {
     const botao = document.createElement("button");
@@ -981,22 +1013,33 @@ function mostrarHorarios() {
 }
 
 function atualizarPreco() {
-  const partes = document.getElementById("servico").value.split("|");
-  document.getElementById("preco").textContent = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const servicoEl = document.getElementById("servico");
+  const precoEl = document.getElementById("preco");
+  if (!servicoEl || !precoEl) return;
+  const partes = servicoEl.value.split("|");
+  precoEl.textContent = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 window.confirmarAgendamento = function() {
-  const nome = document.getElementById("cliente").value.trim();
-  const telefone = document.getElementById("telefone").value.trim();
-  const data = document.getElementById("data").value;
-  const barbeiro = document.getElementById("barbeiro").value;
+  const clienteEl = document.getElementById("cliente");
+  const telefoneEl = document.getElementById("telefone");
+  const dataEl = document.getElementById("data");
+  const barbeiroEl = document.getElementById("barbeiro");
+  const servicoEl = document.getElementById("servico");
+
+  if (!clienteEl || !telefoneEl || !dataEl || !barbeiroEl || !servicoEl) return;
+
+  const nome = clienteEl.value.trim();
+  const telefone = telefoneEl.value.trim();
+  const data = dataEl.value;
+  const barbeiro = barbeiroEl.value;
 
   if (!nome || !telefone || !data || !horarioEscolhido) {
     mensagem("Preencha nome, WhatsApp, data e horário.");
     return;
   }
 
-  const partes = document.getElementById("servico").value.split("|");
+  const partes = servicoEl.value.split("|");
 
   if (reservasCache.some(r => r.data === data && r.horario === horarioEscolhido && r.barbeiro === barbeiro)) {
     mensagem("Esse horário já foi reservado por outra pessoa.");
@@ -1018,14 +1061,16 @@ window.confirmarAgendamento = function() {
 
   db.collection("reservas_nails").add(novoAgendamento).then(() => {
     localStorage.setItem("nailsPerfil", JSON.stringify({ nome, telefone }));
-    document.getElementById("nome-perfil").value = nome;
-    document.getElementById("telefone-perfil").value = telefone;
+    const perfilNome = document.getElementById("nome-perfil");
+    const perfilTel = document.getElementById("telefone-perfil");
+    if (perfilNome) perfilNome.value = nome;
+    if (perfilTel) perfilTel.value = telefone;
     horarioEscolhido = "";
     
     const dataFormatada = data.split("-").reverse().join("/");
     const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     
-    // Envio automático apenas para o WhatsApp do Administrador Diassis Leite
+    // Envio automático para o WhatsApp do Administrador Diassis Leite
     const textoWp = `Olá Diassis Leite! Novo agendamento no Nails Agenda:%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Profissional:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
     window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=${textoWp}`, '_blank');
 
@@ -1039,6 +1084,7 @@ window.confirmarAgendamento = function() {
 
 function mostrarReservasCliente() {
   const caixa = document.getElementById("lista-reservas");
+  if (!caixa) return;
   const perfil = lerPerfil();
   const todas = [...reservasCache].sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
   
@@ -1059,8 +1105,11 @@ function mostrarReservasCliente() {
 }
 
 function renderizarPainelBarbeiro() {
-  document.getElementById("nome-barbeiro-logado").textContent = `Profissional: ${barbeiroLogadoNome}`;
+  const nomeLogadoEl = document.getElementById("nome-barbeiro-logado");
   const caixa = document.getElementById("lista-agendamentos-barbeiro");
+  if (!nomeLogadoEl || !caixa) return;
+
+  nomeLogadoEl.textContent = `Profissional: ${barbeiroLogadoNome}`;
   const reservas = reservasCache
     .filter(r => r.barbeiro.trim().toLowerCase() === barbeiroLogadoNome.trim().toLowerCase())
     .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
@@ -1081,8 +1130,10 @@ function renderizarAdmin() {
   const reservas = [...reservasCache].sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
   const receita = reservas.reduce((acc, r) => acc + (r.pago ? r.preco : 0), 0);
   
-  document.getElementById("kpi-receita").textContent = receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-  document.getElementById("kpi-qtd").textContent = reservas.length;
+  const kpiReceita = document.getElementById("kpi-receita");
+  const kpiQtd = document.getElementById("kpi-qtd");
+  if (kpiReceita) kpiReceita.textContent = receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  if (kpiQtd) kpiQtd.textContent = reservas.length;
 
   const equipe = lerBarbeiros().map(b => b.nome);
   const totais = equipe.map(b => reservas.filter(r => r.barbeiro.trim().toLowerCase() === b.trim().toLowerCase()).reduce((s, r) => s + r.preco, 0));
@@ -1107,10 +1158,13 @@ function renderizarAdmin() {
         <stop offset="100%" stop-color="#db2777"/>
       </linearGradient>
     </defs>
-  </svg>`;
-  document.getElementById("grafico-svg").innerHTML = svg;
+  `;
+  
+  const graficoSvg = document.getElementById("grafico-svg");
+  if (graficoSvg) graficoSvg.innerHTML = svg;
 
   const listaAdmin = document.getElementById("lista-admin");
+  if (!listaAdmin) return;
   listaAdmin.innerHTML = "";
   if (!reservas.length) {
     listaAdmin.innerHTML = '<div class="painel" style="text-align:center;color:var(--text-muted)">Agenda vazia no momento.</div>';
@@ -1176,19 +1230,27 @@ window.salvarPerfil = function() {
   mensagem("Perfil salvo com sucesso!");
 };
 
-document.getElementById("servico").addEventListener("change", atualizarPreco);
-document.getElementById("data").addEventListener("change", () => { horarioEscolhido = ""; mostrarHorarios(); });
-document.getElementById("barbeiro").addEventListener("change", () => { horarioEscolhido = ""; mostrarHorarios(); });
+const servicoEl = document.getElementById("servico");
+const dataEl = document.getElementById("data");
+const barbeiroEl = document.getElementById("barbeiro");
+
+if (servicoEl) servicoEl.addEventListener("change", atualizarPreco);
+if (dataEl) dataEl.addEventListener("change", () => { horarioEscolhido = ""; mostrarHorarios(); });
+if (barbeiroEl) barbeiroEl.addEventListener("change", () => { horarioEscolhido = ""; mostrarHorarios(); });
 
 const hoje = new Date();
 hoje.setMinutes(hoje.getMinutes() - hoje.getTimezoneOffset());
 const campoData = document.getElementById("data");
-campoData.min = hoje.toISOString().slice(0, 10);
-campoData.value = hoje.toISOString().slice(0, 10);
+if (campoData) {
+  campoData.min = hoje.toISOString().slice(0, 10);
+  campoData.value = hoje.toISOString().slice(0, 10);
+}
 
 const perfilSalvo = lerPerfil();
-document.getElementById("nome-perfil").value = perfilSalvo.nome || "";
-document.getElementById("telefone-perfil").value = perfilSalvo.telefone || "";
+const perfilNome = document.getElementById("nome-perfil");
+const perfilTel = document.getElementById("telefone-perfil");
+if (perfilNome) perfilNome.value = perfilSalvo.nome || "";
+if (perfilTel) perfilTel.value = perfilSalvo.telefone || "";
 
 atualizarPreco();
 renderizarBarbeirosHome();
