@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0d111a">
-<meta name="description" content="Agende seu horário na Barber Agenda.">
-<title>Barber Agenda — Studio & Barbearia</title>
+<meta name="description" content="Agende seu horário no Studio de Manicure & Pedicure.">
+<title>Nails Agenda — Studio & Esmalteria</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon-192.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,17 +19,17 @@
 
 <style>
 :root {
-  --bg-body: #060913;
-  --bg-app: rgba(13, 20, 38, 0.90);
-  --bg-card: rgba(19, 28, 51, 0.85);
-  --bg-input: rgba(10, 16, 32, 0.92);
-  --border: rgba(6, 182, 212, 0.25);
-  --primary: #06b6d4;
-  --primary-light: #22d3ee;
-  --primary-grad: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
+  --bg-body: #0a060f;
+  --bg-app: rgba(26, 15, 38, 0.90);
+  --bg-card: rgba(38, 22, 54, 0.85);
+  --bg-input: rgba(18, 10, 26, 0.92);
+  --border: rgba(236, 72, 153, 0.25);
+  --primary: #db2777;
+  --primary-light: #f472b6;
+  --primary-grad: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
   --accent: #10b981;
-  --text-main: #f0f9ff;
-  --text-muted: #93c5fd;
+  --text-main: #fdf2f8;
+  --text-muted: #fbcfe8;
   --success: #34d399;
   --warning: #fbbf24;
   --danger: #f87171;
@@ -40,8 +40,8 @@
 body {
   margin: 0;
   background-color: var(--bg-body);
-  background-image: linear-gradient(to bottom, rgba(6, 9, 19, 0.82), rgba(6, 9, 19, 0.94)),
-                    url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1400&q=80');
+  background-image: linear-gradient(to bottom, rgba(10, 6, 15, 0.82), rgba(10, 6, 15, 0.94)),
+                    url('https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1400&q=80');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -62,7 +62,7 @@ button:active { transform: scale(0.97); }
   -webkit-backdrop-filter: blur(10px);
   padding-bottom: 90px;
   position: relative;
-  box-shadow: 0 25px 50px -12px rgba(6, 182, 212, 0.25);
+  box-shadow: 0 25px 50px -12px rgba(219, 39, 119, 0.25);
 }
 
 /* Topo */
@@ -72,7 +72,7 @@ button:active { transform: scale(0.97); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(13, 20, 38, 0.9);
+  background: rgba(26, 15, 38, 0.9);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   position: sticky;
@@ -88,7 +88,7 @@ button:active { transform: scale(0.97); }
   gap: 8px;
   color: var(--text-main);
 }
-.logo span { color: var(--primary-light); text-shadow: 0 0 12px rgba(34, 211, 238, 0.6); }
+.logo span { color: var(--primary-light); text-shadow: 0 0 12px rgba(244, 114, 182, 0.6); }
 .icone-btn {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -100,17 +100,17 @@ button:active { transform: scale(0.97); }
   place-items: center;
   position: relative;
 }
-.icone-btn:hover { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(34,211,238,0.3); }
+.icone-btn:hover { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(244,114,182,0.3); }
 
 /* Menu Flutuante do Bonequinho */
 .menu-usuario {
   position: absolute;
   top: 60px;
   right: 18px;
-  background: #111c36;
+  background: #261636;
   border: 1px solid var(--border);
   border-radius: 16px;
-  width: 210px;
+  width: 220px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.8);
   z-index: 100;
   overflow: hidden;
@@ -132,7 +132,7 @@ button:active { transform: scale(0.97); }
   border-bottom: 1px solid var(--border);
 }
 .menu-usuario button:last-child { border-bottom: none; }
-.menu-usuario button:hover { background: #1a2a50; color: var(--primary-light); }
+.menu-usuario button:hover { background: #3b2054; color: var(--primary-light); }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-8px); }
@@ -151,10 +151,10 @@ main { padding: 18px; }
   justify-content: flex-end;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(34, 211, 238, 0.4);
-  background: linear-gradient(to top, rgba(6, 9, 19, 0.92) 10%, rgba(13, 20, 38, 0.55) 55%, rgba(13, 20, 38, 0.25) 100%),
-              url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1000&q=80') center/cover;
-  box-shadow: 0 10px 30px rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(244, 114, 182, 0.4);
+  background: linear-gradient(to top, rgba(10, 6, 15, 0.92) 10%, rgba(26, 15, 38, 0.55) 55%, rgba(26, 15, 38, 0.25) 100%),
+              url('https://images.unsplash.com/photo-1632345031435-877ff6c9d7d9?auto=format&fit=crop&w=1000&q=80') center/cover;
+  box-shadow: 0 10px 30px rgba(219, 39, 119, 0.2);
 }
 .hero-conteudo {
   position: relative;
@@ -163,7 +163,7 @@ main { padding: 18px; }
 }
 .hero-titulo-principal {
   font-family: 'Oswald', sans-serif;
-  font-size: 36px;
+  font-size: 34px;
   line-height: 1;
   margin: 0 0 4px 0;
   letter-spacing: 1.5px;
@@ -171,10 +171,10 @@ main { padding: 18px; }
   color: #ffffff;
   text-shadow: 0 2px 10px rgba(0,0,0,0.8);
 }
-.hero-titulo-principal span { color: var(--primary-light); text-shadow: 0 0 15px rgba(34, 211, 238, 0.8); }
+.hero-titulo-principal span { color: var(--primary-light); text-shadow: 0 0 15px rgba(244, 114, 182, 0.8); }
 .hero p {
   font-size: 12px;
-  color: #e0f2fe;
+  color: #fce7f3;
   margin: 0 0 16px 0;
   letter-spacing: 0.5px;
 }
@@ -184,7 +184,7 @@ main { padding: 18px; }
   border: 0;
   border-radius: 14px;
   background: var(--primary-grad);
-  color: #060913;
+  color: #ffffff;
   font-weight: 700;
   padding: 13px 20px;
   display: inline-flex;
@@ -192,7 +192,7 @@ main { padding: 18px; }
   justify-content: center;
   gap: 8px;
   font-size: 14px;
-  box-shadow: 0 8px 25px -6px rgba(34, 211, 238, 0.6);
+  box-shadow: 0 8px 25px -6px rgba(244, 114, 182, 0.6);
 }
 .btn-largo { width: 100%; margin-top: 16px; }
 .btn-sec {
@@ -270,9 +270,9 @@ main { padding: 18px; }
   gap: 8px;
 }
 .atalho i { color: var(--primary-light); }
-.atalho:hover { border-color: var(--primary-light); background: rgba(23, 37, 84, 0.7); box-shadow: 0 0 12px rgba(6,182,212,0.2); }
+.atalho:hover { border-color: var(--primary-light); background: rgba(59, 32, 84, 0.7); box-shadow: 0 0 12px rgba(219,39,119,0.2); }
 
-/* Barbeiros */
+/* Barbeiros/Manicures */
 .barbeiros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .barbeiro {
   background: var(--bg-card);
@@ -283,19 +283,19 @@ main { padding: 18px; }
   transition: transform 0.2s;
   position: relative;
 }
-.barbeiro:hover { transform: translateY(-3px); border-color: var(--primary-light); box-shadow: 0 5px 15px rgba(6,182,212,0.25); }
+.barbeiro:hover { transform: translateY(-3px); border-color: var(--primary-light); box-shadow: 0 5px 15px rgba(219,39,119,0.25); }
 .foto-barbeiro {
   height: 95px;
   width: 100%;
   object-fit: cover;
   display: block;
-  background: #1e293b;
+  background: #2d1b3f;
 }
 .barbeiro-info { padding: 10px; }
 .barbeiro strong { font-size: 13px; display: block; color: var(--text-main); }
 .barbeiro small { display: flex; align-items: center; gap: 4px; color: var(--primary-light); font-size: 11px; margin-top: 4px; font-weight: 600; }
 
-/* Lista de Barbeiros no Admin */
+/* Lista de Profissionais no Admin */
 .lista-admin-barbeiros { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
 .admin-barbeiro-item {
   display: flex;
@@ -331,7 +331,7 @@ main { padding: 18px; }
   outline: none;
   font-size: 14px;
 }
-.campo:focus { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(34,211,238,0.3); }
+.campo:focus { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(244,114,182,0.3); }
 
 /* Horários */
 .horarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -346,9 +346,9 @@ main { padding: 18px; }
 }
 .horario.selecionado {
   background: var(--primary-grad);
-  color: #060913;
+  color: #ffffff;
   border-color: var(--primary-light);
-  box-shadow: 0 0 15px rgba(34,211,238,0.5);
+  box-shadow: 0 0 15px rgba(244,114,182,0.5);
 }
 .horario:disabled { opacity: 0.25; text-decoration: line-through; cursor: not-allowed; }
 
@@ -397,7 +397,7 @@ main { padding: 18px; }
   padding: 14px;
 }
 .kpi-card small { color: var(--text-muted); font-size: 11px; display: block; }
-.kpi-card strong { font-family: 'Oswald', sans-serif; font-size: 24px; color: var(--primary-light); display: block; margin-top: 4px; text-shadow: 0 0 10px rgba(34,211,238,0.4); }
+.kpi-card strong { font-family: 'Oswald', sans-serif; font-size: 24px; color: var(--primary-light); display: block; margin-top: 4px; text-shadow: 0 0 10px rgba(244,114,182,0.4); }
 .grafico-box {
   background: var(--bg-card);
   backdrop-filter: blur(8px);
@@ -434,7 +434,7 @@ main { padding: 18px; }
   width: 100%;
   max-width: 500px;
   height: 74px;
-  background: rgba(13, 20, 38, 0.95);
+  background: rgba(26, 15, 38, 0.95);
   backdrop-filter: blur(14px);
   border-top: 1px solid var(--border);
   display: grid;
@@ -453,14 +453,14 @@ main { padding: 18px; }
   justify-content: center;
   gap: 5px;
 }
-.nav button.ativo { color: var(--primary-light); text-shadow: 0 0 10px rgba(34,211,238,0.6); }
+.nav button.ativo { color: var(--primary-light); text-shadow: 0 0 10px rgba(244,114,182,0.6); }
 
 #mensagem {
   position: fixed;
   bottom: 88px;
   left: 50%;
   transform: translateX(-50%);
-  background: #111c36;
+  background: #261636;
   border: 1px solid var(--primary-light);
   color: #fff;
   border-radius: 12px;
@@ -470,7 +470,7 @@ main { padding: 18px; }
   z-index: 50;
   max-width: 90%;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(6,182,212,0.4);
+  box-shadow: 0 10px 25px rgba(219,39,119,0.4);
 }
 
 @media (min-width: 540px) {
@@ -490,7 +490,7 @@ main { padding: 18px; }
 <div id="app">
 
 <header class="topo">
-  <div class="logo"><i data-lucide="scissors" style="color:var(--primary-light)"></i> BARBER <span>AGENDA</span></div>
+  <div class="logo"><i data-lucide="sparkles" style="color:var(--primary-light)"></i> NAILS <span>AGENDA</span></div>
   
   <!-- MENU DO BONEQUINHO -->
   <div style="position:relative;">
@@ -498,7 +498,7 @@ main { padding: 18px; }
     
     <div id="menu-usuario" class="menu-usuario oculta">
       <button onclick="abrirTela('perfil'); fecharMenuUsuario()"><i data-lucide="user-check" size="16"></i> Meu Perfil</button>
-      <button onclick="solicitarLoginBarbeiro()"><i data-lucide="scissors" size="16"></i> Login Barbeiro</button>
+      <button onclick="solicitarLoginBarbeiro()"><i data-lucide="sparkles" size="16"></i> Login Profissional</button>
       <button onclick="solicitarSenhaAdmin()"><i data-lucide="shield-check" size="16"></i> Login Admin</button>
     </div>
   </div>
@@ -510,8 +510,8 @@ main { padding: 18px; }
 <section id="inicio" class="tela">
   <div class="hero">
     <div class="hero-conteudo">
-      <h1 class="hero-titulo-principal">BARBER<br><span>AGENDA</span></h1>
-      <p>Sua melhor versão, sempre!</p>
+      <h1 class="hero-titulo-principal">NAILS<br><span>AGENDA</span></h1>
+      <p>Unhas perfeitas, cuidado e elegância!</p>
       <button class="btn" onclick="abrirTela('agendar')"><i data-lucide="calendar-plus" size="18"></i> Agendar horário →</button>
     </div>
   </div>
@@ -529,19 +529,19 @@ main { padding: 18px; }
 
   <h2 class="titulo">Tabela de serviços</h2>
   <div class="painel">
-    <div class="resumo"><span>Corte masculino</span><strong>R$ 35,00</strong></div>
-    <div class="resumo"><span>Barba completa</span><strong>R$ 25,00</strong></div>
-    <div class="resumo"><span>Combo Corte + Barba</span><strong>R$ 55,00</strong></div>
-    <div class="resumo"><span>Sobrancelha</span><strong>R$ 15,00</strong></div>
+    <div class="resumo"><span>Manicure simples</span><strong>R$ 30,00</strong></div>
+    <div class="resumo"><span>Pedicure simples</span><strong>R$ 35,00</strong></div>
+    <div class="resumo"><span>Combo Manicure + Pedicure</span><strong>R$ 60,00</strong></div>
+    <div class="resumo"><span>Unhas em Gel / Acrigel</span><strong>R$ 100,00</strong></div>
   </div>
 </section>
 
-<!-- TELA DE LOGIN DO BARBEIRO -->
+<!-- TELA DE LOGIN DO PROFISSIONAL -->
 <section id="login-barbeiro" class="tela oculta">
-  <h2 class="titulo">Área do Barbeiro</h2>
+  <h2 class="titulo">Área da Profissional</h2>
   <div class="painel">
-    <label class="rotulo" for="login-nome-barbeiro">Seu Nome (Ex: Lucas Silva, Neto Barbeiro)</label>
-    <input class="campo" id="login-nome-barbeiro" placeholder="Nome exato do barbeiro">
+    <label class="rotulo" for="login-nome-barbeiro">Seu Nome (Ex: Ana Paula, Mariana Costa)</label>
+    <input class="campo" id="login-nome-barbeiro" placeholder="Nome exato da profissional">
 
     <label class="rotulo" for="login-senha-barbeiro">Sua Senha</label>
     <input class="campo" id="login-senha-barbeiro" type="password" placeholder="Senha (padrão: 123)">
@@ -555,17 +555,17 @@ main { padding: 18px; }
   <h2 class="titulo">Novo agendamento</h2>
   <div class="painel">
     <label class="rotulo" for="cliente">Seu nome</label>
-    <input class="campo" id="cliente" placeholder="Ex: João Pedro">
+    <input class="campo" id="cliente" placeholder="Ex: Camila Lima">
 
     <label class="rotulo" for="telefone">WhatsApp</label>
     <input class="campo" id="telefone" type="tel" placeholder="(00) 90000-0000">
 
     <label class="rotulo" for="servico">Serviço</label>
     <select class="campo" id="servico">
-      <option value="Corte masculino|35">Corte masculino — R$ 35,00</option>
-      <option value="Barba completa|25">Barba completa — R$ 25,00</option>
-      <option value="Combo Corte + Barba|55">Combo Corte + Barba — R$ 55,00</option>
-      <option value="Sobrancelha|15">Sobrancelha — R$ 15,00</option>
+      <option value="Manicure simples|30">Manicure simples — R$ 30,00</option>
+      <option value="Pedicure simples|35">Pedicure simples — R$ 35,00</option>
+      <option value="Combo Manicure + Pedicure|60">Combo Manicure + Pedicure — R$ 60,00</option>
+      <option value="Unhas em Gel / Acrigel|100">Unhas em Gel / Acrigel — R$ 100,00</option>
     </select>
 
     <label class="rotulo" for="barbeiro">Profissional</label>
@@ -585,7 +585,7 @@ main { padding: 18px; }
       <button type="button" class="btn-whatsapp" onclick="abrirWhatsAppAdmin()"><i data-lucide="message-circle" size="15"></i> WhatsApp</button>
     </div>
 
-    <div class="resumo" style="margin-top:12px"><span>Total a pagar</span><strong id="preco" style="color:var(--primary-light);font-size:18px">R$ 35,00</strong></div>
+    <div class="resumo" style="margin-top:12px"><span>Total a pagar</span><strong id="preco" style="color:var(--primary-light);font-size:18px">R$ 30,00</strong></div>
     
     <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar & Enviar WhatsApp</button>
   </div>
@@ -598,11 +598,11 @@ main { padding: 18px; }
   <div id="lista-reservas"></div>
 </section>
 
-<!-- TELA PAINEL DO BARBEIRO -->
+<!-- TELA PAINEL DA PROFISSIONAL -->
 <section id="painel-barbeiro" class="tela oculta">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <div>
-      <h2 class="titulo" style="margin:0">Painel do Barbeiro</h2>
+      <h2 class="titulo" style="margin:0">Painel da Profissional</h2>
       <small id="nome-barbeiro-logado" style="color:var(--primary-light)"></small>
     </div>
     <button class="btn-sec" onclick="abrirTela('inicio')">Sair</button>
@@ -617,20 +617,20 @@ main { padding: 18px; }
     <button class="btn-sec" onclick="abrirTela('inicio')">Sair do Admin</button>
   </div>
   
-  <!-- CADASTRAR / GERENCIAR BARBEIROS -->
+  <!-- CADASTRAR / GERENCIAR PROFISSIONAIS -->
   <div class="painel" style="margin-top:16px">
-    <strong style="font-size:15px;color:var(--primary-light);display:block;margin-bottom:10px"><i data-lucide="user-plus" size="16"></i> Cadastrar Barbeiro</strong>
+    <strong style="font-size:15px;color:var(--primary-light);display:block;margin-bottom:10px"><i data-lucide="user-plus" size="16"></i> Cadastrar Profissional</strong>
     
-    <label class="rotulo" for="adm-nome-barbeiro">Nome do Barbeiro</label>
-    <input class="campo" id="adm-nome-barbeiro" placeholder="Ex: Carlos Eduardo">
+    <label class="rotulo" for="adm-nome-barbeiro">Nome da Profissional</label>
+    <input class="campo" id="adm-nome-barbeiro" placeholder="Ex: Juliana Souza">
 
     <label class="rotulo" for="adm-esp-barbeiro">Especialidade / Avaliação</label>
-    <input class="campo" id="adm-esp-barbeiro" placeholder="Ex: ★ 5.0 · Barba & Cabelo">
+    <input class="campo" id="adm-esp-barbeiro" placeholder="Ex: ★ 5.0 · Unhas em Gel & Nail Art">
 
-    <label class="rotulo" for="adm-senha-barbeiro">Senha de Acesso do Barbeiro</label>
+    <label class="rotulo" for="adm-senha-barbeiro">Senha de Acesso</label>
     <input class="campo" id="adm-senha-barbeiro" type="password" placeholder="Ex: 123">
 
-    <label class="rotulo">Foto do Barbeiro</label>
+    <label class="rotulo">Foto da Profissional</label>
     <div style="display:flex; gap:8px; align-items:center;">
       <input type="file" id="adm-arquivo-foto" accept="image/*" style="display:none" onchange="converterFotoBarbeiro(event)">
       <button type="button" class="btn-sec" onclick="document.getElementById('adm-arquivo-foto').click()"><i data-lucide="upload" size="15"></i> Escolher do Aparelho</button>
@@ -641,7 +641,7 @@ main { padding: 18px; }
 
     <button class="btn btn-largo" onclick="salvarBarbeiro()"><i data-lucide="user-check" size="18"></i> Adicionar à Equipe</button>
 
-    <h2 class="titulo" style="font-size:15px;margin:20px 0 10px">Barbeiros Cadastrados</h2>
+    <h2 class="titulo" style="font-size:15px;margin:20px 0 10px">Profissionais Cadastradas</h2>
     <div class="lista-admin-barbeiros" id="lista-admin-barbeiros"></div>
   </div>
 
@@ -658,7 +658,7 @@ main { padding: 18px; }
 
   <div class="grafico-box">
     <div class="grafico-header">
-      <span>Faturamento por Barbeiro</span>
+      <span>Faturamento por Profissional</span>
       <small>Tempo real (Firebase)</small>
     </div>
     <div id="grafico-svg"></div>
@@ -717,22 +717,21 @@ let fotoTempBase64 = "";
 let barbeiroLogadoNome = "";
 
 const equipePadrao = [
-  { nome: "Lucas Silva", especialidade: "★ 4.9 · Degradê", senha: "123", foto: "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&w=400&q=80" },
-  { nome: "Rafael Santos", especialidade: "★ 4.8 · Clássico", senha: "123", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" },
-  { nome: "Diego Almeida", especialidade: "★ 4.9 · Barba", senha: "123", foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" },
-  { nome: "Neto Barbeiro", especialidade: "★ 5.0 · Social", senha: "123", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" }
+  { nome: "Ana Paula", especialidade: "★ 4.9 · Manicure & Gel", senha: "123", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" },
+  { nome: "Mariana Costa", especialidade: "★ 4.8 · Pedicure & Spa", senha: "123", foto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80" },
+  { nome: "Beatriz Souza", especialidade: "★ 4.9 · Nail Art", senha: "123", foto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80" }
 ];
 
 function lerBarbeiros() {
   try {
-    return JSON.parse(localStorage.getItem("barberEquipe")) || equipePadrao;
+    return JSON.parse(localStorage.getItem("nailsEquipe")) || equipePadrao;
   } catch(e) {
     return equipePadrao;
   }
 }
 
 function salvarBarbeirosLocal(equipe) {
-  localStorage.setItem("barberEquipe", JSON.stringify(equipe));
+  localStorage.setItem("nailsEquipe", JSON.stringify(equipe));
   atualizarSelectBarbeiros();
   renderizarBarbeirosHome();
   renderizarAdminBarbeiros();
@@ -778,7 +777,7 @@ function renderizarAdminBarbeiros() {
   const equipe = lerBarbeiros();
   container.innerHTML = "";
   if (!equipe.length) {
-    container.innerHTML = '<small style="color:var(--text-muted)">Nenhum barbeiro cadastrado.</small>';
+    container.innerHTML = '<small style="color:var(--text-muted)">Nenhuma profissional cadastrada.</small>';
     return;
   }
   equipe.forEach((b, index) => {
@@ -802,12 +801,12 @@ function renderizarAdminBarbeiros() {
 window.excluirBarbeiro = function(index) {
   let equipe = lerBarbeiros();
   if (equipe.length <= 1) {
-    mensagem("Você precisa manter pelo menos um barbeiro.");
+    mensagem("Você precisa manter pelo menos uma profissional.");
     return;
   }
   equipe.splice(index, 1);
   salvarBarbeirosLocal(equipe);
-  mensagem("Barbeiro excluído com sucesso!");
+  mensagem("Profissional excluída com sucesso!");
 };
 
 window.converterFotoBarbeiro = function(event) {
@@ -829,7 +828,7 @@ window.salvarBarbeiro = function() {
   let foto = fotoTempBase64 || document.getElementById("adm-foto-barbeiro").value.trim();
 
   if (!nome) {
-    mensagem("Digite o nome do barbeiro.");
+    mensagem("Digite o nome da profissional.");
     return;
   }
 
@@ -852,7 +851,7 @@ window.salvarBarbeiro = function() {
   fotoTempBase64 = "";
   document.getElementById("foto-status").textContent = "Nenhuma foto selecionada";
 
-  mensagem(`Barbeiro ${nome} cadastrado com sucesso!`);
+  mensagem(`Profissional ${nome} cadastrada com sucesso!`);
 };
 
 window.toggleMenuUsuario = function(event) {
@@ -875,7 +874,7 @@ window.fazerLoginBarbeiro = function() {
   const senhaInput = document.getElementById("login-senha-barbeiro").value.trim();
 
   if (!nomeInput || !senhaInput) {
-    mensagem("Preencha o nome e a senha do barbeiro.");
+    mensagem("Preencha o nome e a senha.");
     return;
   }
 
@@ -883,7 +882,7 @@ window.fazerLoginBarbeiro = function() {
   const barbeiroEncontrado = equipe.find(b => b.nome.trim().toLowerCase() === nomeInput);
 
   if (!barbeiroEncontrado) {
-    mensagem("Barbeiro não encontrado! Verifique o nome.");
+    mensagem("Profissional não encontrada! Verifique o nome.");
     return;
   }
 
@@ -894,7 +893,7 @@ window.fazerLoginBarbeiro = function() {
     document.getElementById("login-nome-barbeiro").value = "";
     document.getElementById("login-senha-barbeiro").value = "";
     abrirTela("painel-barbeiro");
-    mensagem(`Bem-vindo, ${barbeiroEncontrado.nome}!`);
+    mensagem(`Bem-vinda, ${barbeiroEncontrado.nome}!`);
   } else {
     mensagem("Senha incorreta!");
   }
@@ -911,7 +910,7 @@ window.solicitarSenhaAdmin = function() {
   }
 };
 
-db.collection("reservas").onSnapshot((snapshot) => {
+db.collection("reservas_nails").onSnapshot((snapshot) => {
   reservasCache = [];
   snapshot.forEach((doc) => {
     reservasCache.push({ firestoreId: doc.id, ...doc.data() });
@@ -926,7 +925,7 @@ db.collection("reservas").onSnapshot((snapshot) => {
 });
 
 function lerPerfil() {
-  try { return JSON.parse(localStorage.getItem("barberPerfil") || "{}"); }
+  try { return JSON.parse(localStorage.getItem("nailsPerfil") || "{}"); }
   catch(e) { return {}; }
 }
 
@@ -939,13 +938,13 @@ window.mensagem = function(texto) {
 };
 
 window.abrirWhatsAppAdmin = function() {
-  window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=Olá%20Diassis%20Leite,%20vim%20pelo%20Barber%20Agenda.`, "_blank");
+  window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=Olá%20Diassis%20Leite,%20vim%20pelo%20Nails%20Agenda.`, "_blank");
 };
 
 window.abrirChatCliente = function(telefone, nomeCliente) {
   const telLimpo = telefone.replace(/\D/g, '');
   const numeroFormatado = telLimpo.startsWith('55') ? telLimpo : '55' + telLimpo;
-  const texto = encodeURIComponent(`Olá ${nomeCliente}, tudo bem? Aqui é do Barber Agenda sobre seu agendamento.`);
+  const texto = encodeURIComponent(`Olá ${nomeCliente}, tudo bem? Aqui é do Nails Agenda sobre seu agendamento.`);
   window.open(`https://api.whatsapp.com/send?phone=${numeroFormatado}&text=${texto}`, '_blank');
 };
 
@@ -1036,8 +1035,8 @@ window.confirmarAgendamento = function() {
     pago: false
   };
 
-  db.collection("reservas").add(novoAgendamento).then(() => {
-    localStorage.setItem("barberPerfil", JSON.stringify({ nome, telefone }));
+  db.collection("reservas_nails").add(novoAgendamento).then(() => {
+    localStorage.setItem("nailsPerfil", JSON.stringify({ nome, telefone }));
     document.getElementById("nome-perfil").value = nome;
     document.getElementById("telefone-perfil").value = telefone;
     horarioEscolhido = "";
@@ -1045,7 +1044,7 @@ window.confirmarAgendamento = function() {
     const dataFormatada = data.split("-").reverse().join("/");
     const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     
-    const textoWp = `Olá Diassis Leite! Novo agendamento na Barber Agenda:%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Barbeiro:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
+    const textoWp = `Olá Diassis Leite! Novo agendamento no Nails Agenda:%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Profissional:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
     
     window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=${textoWp}`, '_blank');
 
@@ -1116,15 +1115,15 @@ function renderizarAdmin() {
     const y = 105 - barHeight;
     svg += `
       <rect x="${x}" y="${y}" width="50" height="${barHeight}" rx="8" fill="url(#primaryGrad)" />
-      <text x="${x + 25}" y="${y - 7}" fill="#f0f9ff" font-size="11" font-weight="bold" text-anchor="middle">R$${val}</text>
-      <text x="${x + 25}" y="128" fill="#93c5fd" font-size="11" text-anchor="middle">${nome.split(" ")[0]}</text>
+      <text x="${x + 25}" y="${y - 7}" fill="#fdf2f8" font-size="11" font-weight="bold" text-anchor="middle">R$${val}</text>
+      <text x="${x + 25}" y="128" fill="#fbcfe8" font-size="11" text-anchor="middle">${nome.split(" ")[0]}</text>
     `;
   });
   svg += `
     <defs>
       <linearGradient id="primaryGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#22d3ee"/>
-        <stop offset="100%" stop-color="#3b82f6"/>
+        <stop offset="0%" stop-color="#f472b6"/>
+        <stop offset="100%" stop-color="#db2777"/>
       </linearGradient>
     </defs>
   </svg>`;
@@ -1157,7 +1156,7 @@ function criarCardReserva(r, isGestor) {
       <span class="badge-status ${statusClass}">${statusText}</span>
     </div>
     <p><i data-lucide="calendar" size="14"></i> ${r.data.split("-").reverse().join("/")} às ${r.horario}</p>
-    <p><i data-lucide="scissors" size="14"></i> Barbeiro: ${r.barbeiro}</p>
+    <p><i data-lucide="sparkles" size="14"></i> Profissional: ${r.barbeiro}</p>
     ${isGestor ? `<p><i data-lucide="user" size="14"></i> Cliente: ${r.nome} (${r.telefone})</p>` : ""}
     <div class="reserva-acoes">
       ${isGestor ? `<button class="btn-sec" onclick="alternarPagamento('${r.firestoreId}', ${r.pago})">${r.pago ? "Marcar Pendente" : "Confirmar Pagamento"}</button>` : ""}
@@ -1170,7 +1169,7 @@ function criarCardReserva(r, isGestor) {
 }
 
 window.alternarPagamento = function(firestoreId, statusAtual) {
-  db.collection("reservas").doc(firestoreId).update({
+  db.collection("reservas_nails").doc(firestoreId).update({
     pago: !statusAtual
   }).then(() => {
     mensagem("Status atualizado!");
@@ -1180,7 +1179,7 @@ window.alternarPagamento = function(firestoreId, statusAtual) {
 };
 
 window.cancelarReserva = function(firestoreId) {
-  db.collection("reservas").doc(firestoreId).delete().then(() => {
+  db.collection("reservas_nails").doc(firestoreId).delete().then(() => {
     mensagem("Agendamento excluído/cancelado.");
   }).catch((err) => {
     mensagem("Erro ao cancelar agendamento.");
@@ -1192,7 +1191,7 @@ window.salvarPerfil = function() {
     nome: document.getElementById("nome-perfil").value.trim(),
     telefone: document.getElementById("telefone-perfil").value.trim()
   };
-  localStorage.setItem("barberPerfil", JSON.stringify(perfil));
+  localStorage.setItem("nailsPerfil", JSON.stringify(perfil));
   mensagem("Perfil salvo com sucesso!");
 };
 
