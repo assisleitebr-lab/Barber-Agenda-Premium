@@ -19,11 +19,11 @@
 
 <style>
 :root {
-  --bg-body: #06090f;
-  --bg-app: #0c111d;
-  --bg-card: #131b2e;
-  --bg-input: #090e1a;
-  --border: #1e293b;
+  --bg-body: #05070c;
+  --bg-app: rgba(12, 17, 29, 0.88);
+  --bg-card: rgba(19, 27, 46, 0.82);
+  --bg-input: rgba(9, 14, 26, 0.9);
+  --border: rgba(255, 255, 255, 0.09);
   --gold: #f59e0b;
   --gold-light: #fbbf24;
   --gold-grad: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
@@ -35,12 +35,20 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* Plano de Fundo Global do App */
 body {
   margin: 0;
-  background: var(--bg-body);
+  background-color: var(--bg-body);
+  background-image: linear-gradient(to bottom, rgba(5, 7, 12, 0.85), rgba(5, 7, 12, 0.94)),
+                    url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1400&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: var(--text-main);
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
+
 button, input, select { font: inherit; }
 button { cursor: pointer; transition: all 0.2s ease; }
 button:active { transform: scale(0.97); }
@@ -50,9 +58,11 @@ button:active { transform: scale(0.97); }
   min-height: 100vh;
   margin: auto;
   background: var(--bg-app);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding-bottom: 90px;
   position: relative;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
 }
 
 /* Topo */
@@ -63,7 +73,7 @@ button:active { transform: scale(0.97); }
   align-items: center;
   justify-content: space-between;
   background: rgba(12, 17, 29, 0.85);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -97,11 +107,11 @@ button:active { transform: scale(0.97); }
   position: absolute;
   top: 60px;
   right: 18px;
-  background: var(--bg-card);
+  background: #131b2e;
   border: 1px solid var(--border);
   border-radius: 16px;
   width: 210px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.75);
   z-index: 100;
   overflow: hidden;
   animation: fadeIn 0.2s ease;
@@ -133,7 +143,7 @@ main { padding: 18px; }
 
 /* Banner Hero */
 .hero {
-  min-height: 250px;
+  min-height: 240px;
   border-radius: 22px;
   padding: 24px;
   display: flex;
@@ -142,7 +152,7 @@ main { padding: 18px; }
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(245, 158, 11, 0.35);
-  background: linear-gradient(to top, rgba(6, 9, 15, 0.95) 10%, rgba(12, 17, 29, 0.65) 50%, rgba(12, 17, 29, 0.3) 100%),
+  background: linear-gradient(to top, rgba(6, 9, 15, 0.92) 10%, rgba(12, 17, 29, 0.55) 55%, rgba(12, 17, 29, 0.25) 100%),
               url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1000&q=80') center/cover;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
@@ -206,9 +216,9 @@ main { padding: 18px; }
   gap: 6px;
 }
 .btn-danger {
-  background: rgba(239, 68, 68, 0.12);
+  background: rgba(239, 68, 68, 0.14);
   color: var(--danger);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.35);
   box-shadow: none;
   padding: 8px 12px;
   font-size: 12px;
@@ -228,6 +238,7 @@ main { padding: 18px; }
 .atalhos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .atalho {
   background: var(--bg-card);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--border);
   color: var(--text-main);
   border-radius: 16px;
@@ -240,12 +251,13 @@ main { padding: 18px; }
   gap: 8px;
 }
 .atalho i { color: var(--gold); }
-.atalho:hover { border-color: var(--gold); background: #182238; }
+.atalho:hover { border-color: var(--gold); background: rgba(24, 34, 56, 0.9); }
 
 /* Barbeiros */
 .barbeiros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .barbeiro {
   background: var(--bg-card);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
@@ -281,6 +293,7 @@ main { padding: 18px; }
 /* Painéis e Formulários */
 .painel {
   background: var(--bg-card);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 18px;
@@ -333,6 +346,7 @@ main { padding: 18px; }
 /* Cards de Reserva */
 .reserva {
   background: var(--bg-card);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
@@ -356,6 +370,7 @@ main { padding: 18px; }
 .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
 .kpi-card {
   background: var(--bg-card);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 14px;
@@ -364,6 +379,7 @@ main { padding: 18px; }
 .kpi-card strong { font-family: 'Oswald', sans-serif; font-size: 24px; color: var(--gold); display: block; margin-top: 4px; }
 .grafico-box {
   background: var(--bg-card);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 16px;
@@ -375,8 +391,8 @@ main { padding: 18px; }
 
 /* WhatsApp Box */
 .wp-box {
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px dashed rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px dashed rgba(16, 185, 129, 0.45);
   border-radius: 12px;
   padding: 12px;
   margin-top: 12px;
@@ -398,7 +414,7 @@ main { padding: 18px; }
   max-width: 500px;
   height: 74px;
   background: rgba(12, 17, 29, 0.92);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border-top: 1px solid var(--border);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
