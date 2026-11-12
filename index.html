@@ -523,14 +523,14 @@ main { padding: 18px; }
 
     <div class="pix-box">
       <div>
-        <strong style="color:var(--success);display:block">Pagamento Pix (Diassis Leite)</strong>
-        <span style="color:var(--text-muted)">Celular: (84) 98825-1134</span>
+        <strong style="color:var(--success);display:block">Pix / WhatsApp (Diassis Leite)</strong>
+        <span style="color:var(--text-muted)">Celular: (84) 98810-9171</span>
       </div>
       <button type="button" class="btn-sec" onclick="copiarPix()">Copiar</button>
     </div>
 
     <div class="resumo" style="margin-top:12px"><span>Total a pagar</span><strong id="preco" style="color:var(--gold);font-size:18px">R$ 35,00</strong></div>
-    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar horário & Enviar WhatsApp</button>
+    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar & Abrir WhatsApp Web</button>
   </div>
 </section>
 
@@ -673,8 +673,8 @@ window.mensagem = function(texto) {
 };
 
 window.copiarPix = function() {
-  navigator.clipboard?.writeText("84988251134");
-  mensagem("Chave Pix (84988251134) copiada!");
+  navigator.clipboard?.writeText("84988109171");
+  mensagem("Chave PIX / WhatsApp (84988109171) copiada!");
 };
 
 window.abrirTela = function(id) {
@@ -767,13 +767,13 @@ window.confirmarAgendamento = function() {
     const dataFormatada = data.split("-").reverse().join("/");
     const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-    // Mensagem pronta para enviar ao WhatsApp do Barbeiro (Diassis Leite)
+    // Mensagem formatada para o WhatsApp Web (Diassis Leite)
     const textoWp = `Olá Diassis Leite! Agendei um horário na Barber Agenda.%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Barbeiro:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
     
-    // Abre o WhatsApp automaticamente
-    window.open(`https://wa.me/5584988251134?text=${textoWp}`, '_blank');
+    // Força a abertura do WhatsApp Web / Aplicativo com o link oficial api.whatsapp.com
+    window.open(`https://api.whatsapp.com/send?phone=5584988109171&text=${textoWp}`, '_blank');
 
-    mensagem("Agendamento salvo e WhatsApp aberto!");
+    mensagem("Agendamento salvo e WhatsApp Web aberto!");
     abrirTela("reservas");
   }).catch((err) => {
     console.error(err);
