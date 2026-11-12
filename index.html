@@ -1025,7 +1025,7 @@ window.confirmarAgendamento = function() {
     const dataFormatada = data.split("-").reverse().join("/");
     const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     
-    // Envio automático para o WhatsApp do Administrador Diassis Leite
+    // Envio automático apenas para o WhatsApp do Administrador Diassis Leite
     const textoWp = `Olá Diassis Leite! Novo agendamento no Nails Agenda:%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Profissional:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
     window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=${textoWp}`, '_blank');
 
