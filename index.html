@@ -846,22 +846,8 @@ window.salvarBarbeiro = function() {
   const equipe = lerBarbeiros();
   equipe.push({ nome, especialidade, senha, foto });
   
-  // Salva no localStorage e atualiza todas as listas e selects automaticamente
   salvarBarbeirosLocal(equipe);
-  renderizarAdminBarbeiros(); // <--- Garante a atualização imediata na tela do admin
-
-  document.getElementById("adm-nome-barbeiro").value = "";
-  document.getElementById("adm-esp-barbeiro").value = "";
-  document.getElementById("adm-senha-barbeiro").value = "";
-  document.getElementById("adm-foto-barbeiro").value = "";
-  fotoTempBase64 = "";
-  document.getElementById("foto-status").textContent = "Nenhuma foto selecionada";
-
-  mensagem(`Profissional ${nome} cadastrada com sucesso!`);
-};
-  const equipe = lerBarbeiros();
-  equipe.push({ nome, especialidade, senha, foto });
-  salvarBarbeirosLocal(equipe);
+  renderizarAdminBarbeiros();
 
   document.getElementById("adm-nome-barbeiro").value = "";
   document.getElementById("adm-esp-barbeiro").value = "";
@@ -1087,7 +1073,6 @@ window.confirmarAgendamento = function() {
     const dataFormatada = data.split("-").reverse().join("/");
     const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     
-    // Envio automático para o WhatsApp do Administrador Diassis Leite
     const textoWp = `Olá Diassis Leite! Novo agendamento no Nails Agenda:%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Profissional:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
     window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=${textoWp}`, '_blank');
 
