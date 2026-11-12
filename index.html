@@ -188,6 +188,18 @@ main { padding: 18px; }
   padding: 9px 14px;
   font-size: 12px;
 }
+.btn-whatsapp {
+  background: #10b981;
+  color: #06090f;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 700;
+  padding: 9px 14px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 .btn-danger {
   background: rgba(239, 68, 68, 0.12);
   color: var(--danger);
@@ -341,8 +353,8 @@ main { padding: 18px; }
 .grafico-header span { font-size: 13px; font-weight: 700; }
 .grafico-header small { font-size: 11px; color: var(--gold); }
 
-/* Pix / WhatsApp Box */
-.pix-box {
+/* WhatsApp Box */
+.wp-box {
   background: rgba(16, 185, 129, 0.08);
   border: 1px dashed rgba(16, 185, 129, 0.4);
   border-radius: 12px;
@@ -452,7 +464,7 @@ main { padding: 18px; }
   <div class="atalhos">
     <button class="atalho" onclick="abrirTela('reservas')"><i data-lucide="calendar-check"></i>Agenda</button>
     <button class="atalho" onclick="solicitarSenhaAdmin()"><i data-lucide="bar-chart-3"></i>Painel</button>
-    <button class="atalho" onclick="copiarPix()"><i data-lucide="qr-code"></i>Chave Pix</button>
+    <button class="atalho" onclick="abrirWhatsApp()"><i data-lucide="message-circle" style="color:#10b981"></i>WhatsApp</button>
     <button class="atalho" onclick="abrirTela('perfil')"><i data-lucide="user-cog"></i>Perfil</button>
   </div>
 
@@ -521,16 +533,16 @@ main { padding: 18px; }
     <label class="rotulo">Horários disponíveis</label>
     <div class="horarios" id="lista-horarios"></div>
 
-    <div class="pix-box">
+    <div class="wp-box">
       <div>
-        <strong style="color:var(--success);display:block">Pix / WhatsApp (Diassis Leite)</strong>
-        <span style="color:var(--text-muted)">Celular: (84) 98810-9171</span>
+        <strong style="color:var(--success);display:block">Atendimento WhatsApp</strong>
+        <span style="color:var(--text-muted)">Diassis Leite: (84) 98810-9171</span>
       </div>
-      <button type="button" class="btn-sec" onclick="copiarPix()">Copiar</button>
+      <button type="button" class="btn-whatsapp" onclick="abrirWhatsApp()"><i data-lucide="message-circle" size="15"></i> WhatsApp</button>
     </div>
 
     <div class="resumo" style="margin-top:12px"><span>Total a pagar</span><strong id="preco" style="color:var(--gold);font-size:18px">R$ 35,00</strong></div>
-    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar & Abrir WhatsApp Web</button>
+    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar & Abrir WhatsApp</button>
   </div>
 </section>
 
@@ -614,6 +626,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+const LINK_WHATSAPP = "https://web.whatsapp.com/accept?code=";
 const horarios = ["09:00","09:30","10:00","10:30","11:00","11:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","18:00","18:30"];
 let horarioEscolhido = "";
 let reservasCache = [];
@@ -672,9 +685,8 @@ window.mensagem = function(texto) {
   window.timerMensagem = setTimeout(() => caixa.hidden = true, 3000);
 };
 
-window.copiarPix = function() {
-  navigator.clipboard?.writeText("84988109171");
-  mensagem("Chave PIX / WhatsApp (84988109171) copiada!");
+window.abrirWhatsApp = function() {
+  window.open(LINK_WHATSAPP, "_blank");
 };
 
 window.abrirTela = function(id) {
@@ -763,17 +775,10 @@ window.confirmarAgendamento = function() {
     document.getElementById("telefone-perfil").value = telefone;
     horarioEscolhido = "";
     
-    // Formata a data para padrão BR (DD/MM/AAAA)
-    const dataFormatada = data.split("-").reverse().join("/");
-    const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    // Abre o link configurado do WhatsApp Web
+    window.open(LINK_WHATSAPP, "_blank");
 
-    // Mensagem formatada para o WhatsApp Web (Diassis Leite)
-    const textoWp = `Olá Diassis Leite! Agendei um horário na Barber Agenda.%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Barbeiro:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
-    
-    // Força a abertura do WhatsApp Web / Aplicativo com o link oficial api.whatsapp.com
-    window.open(`https://api.whatsapp.com/send?phone=5584988109171&text=${textoWp}`, '_blank');
-
-    mensagem("Agendamento salvo e WhatsApp Web aberto!");
+    mensagem("Agendamento salvo e WhatsApp aberto!");
     abrirTela("reservas");
   }).catch((err) => {
     console.error(err);
@@ -849,7 +854,7 @@ function criarCardReserva(r, isAdmin) {
   card.className = "reserva";
 
   const statusClass = r.pago ? "status-pago" : "status-pendente";
-  const statusText = r.pago ? "Pix Pago" : "Pendente";
+  const statusText = r.pago ? "Confirmado" : "Pendente";
 
   card.innerHTML = `
     <div class="reserva-topo">
@@ -865,7 +870,7 @@ function criarCardReserva(r, isAdmin) {
     <p><i data-lucide="scissors" size="14"></i> Barbeiro: ${r.barbeiro}</p>
     ${isAdmin ? `<p><i data-lucide="user" size="14"></i> Cliente: ${r.nome} (${r.telefone})</p>` : ""}
     <div class="reserva-acoes">
-      ${isAdmin ? `<button class="btn-sec" onclick="alternarPix('${r.firestoreId}', ${r.pago})">${r.pago ? "Marcar Pendente" : "Confirmar Pix"}</button>` : ""}
+      ${isAdmin ? `<button class="btn-sec" onclick="alternarPagamento('${r.firestoreId}', ${r.pago})">${r.pago ? "Marcar Pendente" : "Confirmar Pagamento"}</button>` : ""}
       <button class="btn-danger" onclick="cancelarReserva('${r.firestoreId}')">Cancelar</button>
     </div>
   `;
@@ -873,13 +878,13 @@ function criarCardReserva(r, isAdmin) {
   return card;
 }
 
-window.alternarPix = function(firestoreId, statusAtual) {
+window.alternarPagamento = function(firestoreId, statusAtual) {
   db.collection("reservas").doc(firestoreId).update({
     pago: !statusAtual
   }).then(() => {
-    mensagem("Status de pagamento atualizado!");
+    mensagem("Status atualizado!");
   }).catch((err) => {
-    mensagem("Erro ao atualizar pagamento.");
+    mensagem("Erro ao atualizar status.");
   });
 };
 
