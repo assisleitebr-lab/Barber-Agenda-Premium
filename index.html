@@ -536,7 +536,7 @@ main { padding: 18px; }
   </div>
 </section>
 
-<!-- TELA DE LOGIN DA PROFISSIONAL (Substituiu o prompt) -->
+<!-- TELA DE LOGIN DA PROFISSIONAL -->
 <section id="login-barbeiro" class="tela oculta">
   <h2 class="titulo">Área da Profissional</h2>
   <div class="painel">
@@ -798,7 +798,7 @@ function renderizarAdminBarbeiros() {
     container.appendChild(item);
   });
   setTimeout(() => lucide.createIcons(), 0);
-}
+};
 
 window.excluirBarbeiro = function(index) {
   let equipe = lerBarbeiros();
