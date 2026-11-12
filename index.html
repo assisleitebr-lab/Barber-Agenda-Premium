@@ -131,7 +131,7 @@ button:active { transform: scale(0.97); }
 
 main { padding: 18px; }
 
-/* Banner Hero com Imagem Real de Salão */
+/* Banner Hero */
 .hero {
   min-height: 250px;
   border-radius: 22px;
@@ -161,9 +161,7 @@ main { padding: 18px; }
   color: #ffffff;
   text-shadow: 0 2px 10px rgba(0,0,0,0.8);
 }
-.hero-titulo-principal span {
-  color: var(--gold);
-}
+.hero-titulo-principal span { color: var(--gold); }
 .hero p {
   font-size: 12px;
   color: #cbd5e1;
@@ -171,7 +169,7 @@ main { padding: 18px; }
   letter-spacing: 0.5px;
 }
 
-/* Botão Principal Dourado Original */
+/* Botões */
 .btn {
   border: 0;
   border-radius: 14px;
@@ -252,6 +250,7 @@ main { padding: 18px; }
   border-radius: 16px;
   overflow: hidden;
   transition: transform 0.2s;
+  position: relative;
 }
 .barbeiro:hover { transform: translateY(-3px); border-color: rgba(245, 158, 11, 0.4); }
 .foto-barbeiro {
@@ -456,7 +455,7 @@ main { padding: 18px; }
 
 <main>
 
-<!-- TELA INÍCIO COM BANNER DE SALÃO REAL -->
+<!-- TELA INÍCIO -->
 <section id="inicio" class="tela">
   <div class="hero">
     <div class="hero-conteudo">
@@ -475,28 +474,8 @@ main { padding: 18px; }
   </div>
 
   <h2 class="titulo">Nossa equipe</h2>
-  <div class="barbeiros">
-    <div class="barbeiro">
-      <img class="foto-barbeiro" src="https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&w=400&q=80" alt="Lucas Silva">
-      <div class="barbeiro-info">
-        <strong>Lucas Silva</strong>
-        <small>★ 4.9 · Degradê</small>
-      </div>
-    </div>
-    <div class="barbeiro">
-      <img class="foto-barbeiro" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" alt="Rafael Santos">
-      <div class="barbeiro-info">
-        <strong>Rafael Santos</strong>
-        <small>★ 4.8 · Clássico</small>
-      </div>
-    </div>
-    <div class="barbeiro">
-      <img class="foto-barbeiro" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" alt="Diego Almeida">
-      <div class="barbeiro-info">
-        <strong>Diego Almeida</strong>
-        <small>★ 4.9 · Barba</small>
-      </div>
-    </div>
+  <div class="barbeiros" id="lista-barbeiros-home">
+    <!-- Preenchido dinamicamente -->
   </div>
 
   <h2 class="titulo">Tabela de serviços</h2>
@@ -528,9 +507,7 @@ main { padding: 18px; }
 
     <label class="rotulo" for="barbeiro">Profissional</label>
     <select class="campo" id="barbeiro">
-      <option>Lucas Silva</option>
-      <option>Rafael Santos</option>
-      <option>Diego Almeida</option>
+      <!-- Preenchido dinamicamente -->
     </select>
 
     <label class="rotulo" for="data">Data</label>
@@ -567,6 +544,28 @@ main { padding: 18px; }
     <button class="btn-sec" onclick="abrirTela('inicio')">Sair do Admin</button>
   </div>
   
+  <!-- CADASTRAR BARBEIRO -->
+  <div class="painel" style="margin-top:16px">
+    <strong style="font-size:15px;color:var(--gold);display:block;margin-bottom:10px"><i data-lucide="user-plus" size="16"></i> Cadastrar / Gerenciar Barbeiros</strong>
+    
+    <label class="rotulo" for="adm-nome-barbeiro">Nome do Barbeiro</label>
+    <input class="campo" id="adm-nome-barbeiro" placeholder="Ex: Carlos Eduardo">
+
+    <label class="rotulo" for="adm-esp-barbeiro">Especialidade / Avaliação</label>
+    <input class="campo" id="adm-esp-barbeiro" placeholder="Ex: ★ 5.0 · Barba & Cabelo">
+
+    <label class="rotulo">Foto do Barbeiro</label>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <input type="file" id="adm-arquivo-foto" accept="image/*" style="display:none" onchange="converterFotoBarbeiro(event)">
+      <button type="button" class="btn-sec" onclick="document.getElementById('adm-arquivo-foto').click()"><i data-lucide="upload" size="15"></i> Escolher Foto do Aparelho</button>
+      <span id="foto-status" style="font-size:11px;color:var(--success)">Foto padrão pronta</span>
+    </div>
+    
+    <input class="campo" id="adm-foto-barbeiro" placeholder="Ou cole o link da foto aqui" style="margin-top:8px">
+
+    <button class="btn btn-largo" onclick="salvarBarbeiro()"><i data-lucide="user-check" size="18"></i> Salvar Barbeiro na Equipe</button>
+  </div>
+
   <div class="kpi-grid" style="margin-top:14px">
     <div class="kpi-card">
       <small>Receita Total (Confirmada)</small>
@@ -629,7 +628,6 @@ const firebaseConfig = {
   measurementId: "G-GT2GZHR6SB"
 };
 
-// Inicializa Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
@@ -637,6 +635,103 @@ const NUMERO_ADM = "5584988109171";
 const horarios = ["09:00","09:30","10:00","10:30","11:00","11:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","18:00","18:30"];
 let horarioEscolhido = "";
 let reservasCache = [];
+let fotoTempBase64 = "";
+
+// Equipe padrão caso o localStorage esteja vazio
+const equipePadrao = [
+  { nome: "Lucas Silva", especialidade: "★ 4.9 · Degradê", foto: "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&w=400&q=80" },
+  { nome: "Rafael Santos", especialidade: "★ 4.8 · Clássico", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" },
+  { nome: "Diego Almeida", especialidade: "★ 4.9 · Barba", foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" }
+];
+
+function lerBarbeiros() {
+  try {
+    return JSON.parse(localStorage.getItem("barberEquipe")) || equipePadrao;
+  } catch(e) {
+    return equipePadrao;
+  }
+}
+
+function salvarBarbeirosLocal(equipe) {
+  localStorage.setItem("barberEquipe", JSON.stringify(equipe));
+  atualizarSelectBarbeiros();
+  renderizarBarbeirosHome();
+}
+
+function atualizarSelectBarbeiros() {
+  const select = document.getElementById("barbeiro");
+  if (!select) return;
+  const equipe = lerBarbeiros();
+  const valorAtual = select.value;
+  select.innerHTML = "";
+  equipe.forEach(b => {
+    const opt = document.createElement("option");
+    opt.value = b.nome;
+    opt.textContent = b.nome;
+    select.appendChild(opt);
+  });
+  if (valorAtual) select.value = valorAtual;
+}
+
+function renderizarBarbeirosHome() {
+  const container = document.getElementById("lista-barbeiros-home");
+  if (!container) return;
+  const equipe = lerBarbeiros();
+  container.innerHTML = "";
+  equipe.forEach((b, index) => {
+    const div = document.createElement("div");
+    div.className = "barbeiro";
+    div.innerHTML = `
+      <img class="foto-barbeiro" src="${b.foto}" alt="${b.nome}">
+      <div class="barbeiro-info">
+        <strong>${b.nome}</strong>
+        <small>${b.especialidade}</small>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// Converter foto escolhida no aparelho para Base64
+window.converterFotoBarbeiro = function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    fotoTempBase64 = e.target.result;
+    document.getElementById("adm-foto-barbeiro").value = "[Foto carregada do arquivo]";
+    document.getElementById("foto-status").textContent = "Foto carregada com sucesso!";
+  };
+  reader.readAsDataURL(file);
+};
+
+window.salvarBarbeiro = function() {
+  const nome = document.getElementById("adm-nome-barbeiro").value.trim();
+  const especialidade = document.getElementById("adm-esp-barbeiro").value.trim() || "★ 5.0 · Profissional";
+  let foto = fotoTempBase64 || document.getElementById("adm-foto-barbeiro").value.trim();
+
+  if (!nome) {
+    mensagem("Digite o nome do barbeiro.");
+    return;
+  }
+
+  if (!foto) {
+    foto = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"; // Foto padrão
+  }
+
+  const equipe = lerBarbeiros();
+  equipe.push({ nome, especialidade, foto });
+  salvarBarbeirosLocal(equipe);
+
+  // Limpa campos
+  document.getElementById("adm-nome-barbeiro").value = "";
+  document.getElementById("adm-esp-barbeiro").value = "";
+  document.getElementById("adm-foto-barbeiro").value = "";
+  fotoTempBase64 = "";
+  document.getElementById("foto-status").textContent = "Cadastrado com sucesso!";
+
+  mensagem(`Barbeiro ${nome} cadastrado com sucesso!`);
+};
 
 // Menu do Bonequinho
 window.toggleMenuUsuario = function(event) {
@@ -706,6 +801,7 @@ window.abrirTela = function(id) {
 
   if (id === "agendar") {
     preencherDadosCliente();
+    atualizarSelectBarbeiros();
     mostrarHorarios();
   }
   if (id === "reservas") mostrarReservasCliente();
@@ -825,7 +921,7 @@ function renderizarAdmin() {
   document.getElementById("kpi-receita").textContent = receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   document.getElementById("kpi-qtd").textContent = reservas.length;
 
-  const equipe = ["Lucas Silva", "Rafael Santos", "Diego Almeida"];
+  const equipe = lerBarbeiros().map(b => b.nome);
   const totais = equipe.map(b => reservas.filter(r => r.barbeiro === b).reduce((s, r) => s + r.preco, 0));
   const maxVal = Math.max(...totais, 100);
 
@@ -931,6 +1027,8 @@ document.getElementById("nome-perfil").value = perfilSalvo.nome || "";
 document.getElementById("telefone-perfil").value = perfilSalvo.telefone || "";
 
 atualizarPreco();
+renderizarBarbeirosHome();
+atualizarSelectBarbeiros();
 mostrarHorarios();
 lucide.createIcons();
 
