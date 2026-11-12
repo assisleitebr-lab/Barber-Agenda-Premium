@@ -341,7 +341,7 @@ main { padding: 18px; }
 .grafico-header span { font-size: 13px; font-weight: 700; }
 .grafico-header small { font-size: 11px; color: var(--gold); }
 
-/* Pix Box */
+/* Pix / WhatsApp Box */
 .pix-box {
   background: rgba(16, 185, 129, 0.08);
   border: 1px dashed rgba(16, 185, 129, 0.4);
@@ -423,7 +423,7 @@ main { padding: 18px; }
 <header class="topo">
   <div class="logo"><i data-lucide="scissors" style="color:var(--gold)"></i> BARBER <span>AGENDA</span></div>
   
-  <!-- BOTÃO DO BONEQUINHO COM MENU FLUTUANTE -->
+  <!-- MENU DO BONEQUINHO -->
   <div style="position:relative;">
     <button class="icone-btn" onclick="toggleMenuUsuario(event)" title="Menu do Usuário"><i data-lucide="user"></i></button>
     
@@ -523,14 +523,14 @@ main { padding: 18px; }
 
     <div class="pix-box">
       <div>
-        <strong style="color:var(--success);display:block">Pagamento via Pix disponível</strong>
-        <span style="color:var(--text-muted)">Chave: 84988109171</span>
+        <strong style="color:var(--success);display:block">Pagamento Pix (Diassis Leite)</strong>
+        <span style="color:var(--text-muted)">Celular: (84) 98825-1134</span>
       </div>
       <button type="button" class="btn-sec" onclick="copiarPix()">Copiar</button>
     </div>
 
     <div class="resumo" style="margin-top:12px"><span>Total a pagar</span><strong id="preco" style="color:var(--gold);font-size:18px">R$ 35,00</strong></div>
-    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar horário</button>
+    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar horário & Enviar WhatsApp</button>
   </div>
 </section>
 
@@ -629,13 +629,11 @@ window.fecharMenuUsuario = function() {
   document.getElementById("menu-usuario").classList.add("oculta");
 };
 
-// Fecha o menu ao clicar fora
 window.addEventListener("click", () => {
   const menu = document.getElementById("menu-usuario");
   if (menu) menu.classList.add("oculta");
 });
 
-// Validação da senha do Admin
 window.solicitarSenhaAdmin = function() {
   fecharMenuUsuario();
   const senha = prompt("Digite a senha do Administrador:");
@@ -647,7 +645,7 @@ window.solicitarSenhaAdmin = function() {
   }
 };
 
-// Ouve mudanças no Firestore em tempo real
+// Sincronização em tempo real com Firebase
 db.collection("reservas").onSnapshot((snapshot) => {
   reservasCache = [];
   snapshot.forEach((doc) => {
@@ -675,15 +673,14 @@ window.mensagem = function(texto) {
 };
 
 window.copiarPix = function() {
-  navigator.clipboard?.writeText("pix@barbeariag3.com.br");
-  mensagem("Chave Pix copiada!");
+  navigator.clipboard?.writeText("84988251134");
+  mensagem("Chave Pix (84988251134) copiada!");
 };
 
 window.abrirTela = function(id) {
   document.querySelectorAll(".tela").forEach(t => t.classList.add("oculta"));
   document.getElementById(id).classList.remove("oculta");
   
-  // Atualiza nav inferior se a tela pertencer a ela
   document.querySelectorAll(".nav button").forEach(b => {
     b.classList.toggle("ativo", b.dataset.tela === id);
   });
@@ -765,7 +762,18 @@ window.confirmarAgendamento = function() {
     document.getElementById("nome-perfil").value = nome;
     document.getElementById("telefone-perfil").value = telefone;
     horarioEscolhido = "";
-    mensagem("Agendamento salvo na nuvem com sucesso!");
+    
+    // Formata a data para padrão BR (DD/MM/AAAA)
+    const dataFormatada = data.split("-").reverse().join("/");
+    const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+    // Mensagem pronta para enviar ao WhatsApp do Barbeiro (Diassis Leite)
+    const textoWp = `Olá Diassis Leite! Agendei um horário na Barber Agenda.%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Barbeiro:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
+    
+    // Abre o WhatsApp automaticamente
+    window.open(`https://wa.me/5584988251134?text=${textoWp}`, '_blank');
+
+    mensagem("Agendamento salvo e WhatsApp aberto!");
     abrirTela("reservas");
   }).catch((err) => {
     console.error(err);
