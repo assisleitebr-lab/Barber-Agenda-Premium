@@ -165,6 +165,7 @@ main { padding: 18px; }
 }
 .hero p { font-size: 13px; color: #cbd5e1; margin: 0 0 16px 0; line-height: 1.4; }
 
+/* Botão Principal Dourado Original */
 .btn {
   border: 0;
   border-radius: 14px;
@@ -464,7 +465,7 @@ main { padding: 18px; }
   <div class="atalhos">
     <button class="atalho" onclick="abrirTela('reservas')"><i data-lucide="calendar-check"></i>Agenda</button>
     <button class="atalho" onclick="solicitarSenhaAdmin()"><i data-lucide="bar-chart-3"></i>Painel</button>
-    <button class="atalho" onclick="abrirWhatsApp()"><i data-lucide="message-circle" style="color:#10b981"></i>WhatsApp</button>
+    <button class="atalho" onclick="abrirWhatsAppAdmin()"><i data-lucide="message-circle" style="color:#10b981"></i>WhatsApp</button>
     <button class="atalho" onclick="abrirTela('perfil')"><i data-lucide="user-cog"></i>Perfil</button>
   </div>
 
@@ -538,11 +539,13 @@ main { padding: 18px; }
         <strong style="color:var(--success);display:block">Atendimento WhatsApp</strong>
         <span style="color:var(--text-muted)">Diassis Leite: (84) 98810-9171</span>
       </div>
-      <button type="button" class="btn-whatsapp" onclick="abrirWhatsApp()"><i data-lucide="message-circle" size="15"></i> WhatsApp</button>
+      <button type="button" class="btn-whatsapp" onclick="abrirWhatsAppAdmin()"><i data-lucide="message-circle" size="15"></i> WhatsApp</button>
     </div>
 
     <div class="resumo" style="margin-top:12px"><span>Total a pagar</span><strong id="preco" style="color:var(--gold);font-size:18px">R$ 35,00</strong></div>
-    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar & Abrir WhatsApp</button>
+    
+    <!-- BOTÃO PRINCIPAL COM ESTILO DOURADO ORIGINAL -->
+    <button class="btn btn-largo" onclick="confirmarAgendamento()"><i data-lucide="check-circle" size="18"></i> Confirmar & Enviar WhatsApp</button>
   </div>
 </section>
 
@@ -626,7 +629,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-const LINK_WHATSAPP = "https://web.whatsapp.com/accept?code=";
+const NUMERO_ADM = "5584988109171";
 const horarios = ["09:00","09:30","10:00","10:30","11:00","11:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00","18:00","18:30"];
 let horarioEscolhido = "";
 let reservasCache = [];
@@ -685,8 +688,8 @@ window.mensagem = function(texto) {
   window.timerMensagem = setTimeout(() => caixa.hidden = true, 3000);
 };
 
-window.abrirWhatsApp = function() {
-  window.open(LINK_WHATSAPP, "_blank");
+window.abrirWhatsAppAdmin = function() {
+  window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=Olá%20Diassis%20Leite,%20vim%20pelo%20Barber%20Agenda.`, "_blank");
 };
 
 window.abrirTela = function(id) {
@@ -775,10 +778,16 @@ window.confirmarAgendamento = function() {
     document.getElementById("telefone-perfil").value = telefone;
     horarioEscolhido = "";
     
-    // Abre o link configurado do WhatsApp Web
-    window.open(LINK_WHATSAPP, "_blank");
+    // Formata a data e preço para a mensagem do WhatsApp do ADM (Diassis Leite)
+    const dataFormatada = data.split("-").reverse().join("/");
+    const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    
+    const textoWp = `Olá Diassis Leite! Novo agendamento na Barber Agenda:%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Barbeiro:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
+    
+    // Abre o WhatsApp do Administrador com a mensagem pronta
+    window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=${textoWp}`, '_blank');
 
-    mensagem("Agendamento salvo e WhatsApp aberto!");
+    mensagem("Agendamento salvo e enviado para o ADM!");
     abrirTela("reservas");
   }).catch((err) => {
     console.error(err);
