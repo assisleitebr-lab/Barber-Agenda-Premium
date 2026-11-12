@@ -487,13 +487,13 @@ main { padding: 18px; }
 <header class="topo">
   <div class="logo"><i data-lucide="scissors" style="color:var(--gold)"></i> BARBER <span>AGENDA</span></div>
   
-  <!-- MENU DO BONEQUINHO (Apenas Login Barbeiro e Login Admin) -->
+  <!-- MENU DO BONEQUINHO -->
   <div style="position:relative;">
     <button class="icone-btn" onclick="toggleMenuUsuario(event)" title="Menu do Usuário"><i data-lucide="user"></i></button>
     
     <div id="menu-usuario" class="menu-usuario oculta">
       <button onclick="abrirTela('perfil'); fecharMenuUsuario()"><i data-lucide="user-check" size="16"></i> Meu Perfil</button>
-      <button onclick="solicitarLoginBarbeiro()"><i data-lucide="scissors" size="16"></i> Login Barbeiro</button>
+      <button onclick="abrirTela('login-barbeiro'); fecharMenuUsuario()"><i data-lucide="scissors" size="16"></i> Login Barbeiro</button>
       <button onclick="solicitarSenhaAdmin()"><i data-lucide="shield-check" size="16"></i> Login Admin</button>
     </div>
   </div>
@@ -528,6 +528,20 @@ main { padding: 18px; }
     <div class="resumo"><span>Barba completa</span><strong>R$ 25,00</strong></div>
     <div class="resumo"><span>Combo Corte + Barba</span><strong>R$ 55,00</strong></div>
     <div class="resumo"><span>Sobrancelha</span><strong>R$ 15,00</strong></div>
+  </div>
+</section>
+
+<!-- TELA DE LOGIN DO BARBEIRO (Evita falhas do prompt) -->
+<section id="login-barbeiro" class="tela oculta">
+  <h2 class="titulo">Área do Barbeiro</h2>
+  <div class="painel">
+    <label class="rotulo" for="login-nome-barbeiro">Seu Nome (Ex: Lucas Silva, Neto Barbeiro)</label>
+    <input class="campo" id="login-nome-barbeiro" placeholder="Nome exato do barbeiro">
+
+    <label class="rotulo" for="login-senha-barbeiro">Sua Senha</label>
+    <input class="campo" id="login-senha-barbeiro" type="password" placeholder="Senha (padrão: 123)">
+
+    <button class="btn btn-largo" style="margin-top:16px" onclick="fazerLoginBarbeiro()"><i data-lucide="log-in" size="18"></i> Entrar no Painel</button>
   </div>
 </section>
 
@@ -579,7 +593,7 @@ main { padding: 18px; }
   <div id="lista-reservas"></div>
 </section>
 
-<!-- TELA PAINEL DO BARBEIRO (Aba exclusiva para ver agendamentos, chat e excluir) -->
+<!-- TELA PAINEL DO BARBEIRO -->
 <section id="painel-barbeiro" class="tela oculta">
   <div style="display:flex;justify-content:space-between;align-items:center">
     <div>
@@ -851,27 +865,32 @@ window.addEventListener("click", () => {
   if (menu) menu.classList.add("oculta");
 });
 
-window.solicitarLoginBarbeiro = function() {
-  fecharMenuUsuario();
-  const nomeBarbeiro = prompt("Digite o seu nome de Barbeiro:");
-  if (!nomeBarbeiro) return;
-  
-  const equipe = lerBarbeiros();
-  const barbeiroEncontrado = equipe.find(b => b.nome.toLowerCase() === nomeBarbeiro.toLowerCase());
-  
-  if (!barbeiroEncontrado) {
-    mensagem("Barbeiro não encontrado na equipe!");
+window.fazerLoginBarbeiro = function() {
+  const nomeInput = document.getElementById("login-nome-barbeiro").value.trim().toLowerCase();
+  const senhaInput = document.getElementById("login-senha-barbeiro").value.trim();
+
+  if (!nomeInput || !senhaInput) {
+    mensagem("Preencha o nome e a senha do barbeiro.");
     return;
   }
 
-  const senhaInformada = prompt(`Digite a senha para ${barbeiroEncontrado.nome}:`);
+  const equipe = lerBarbeiros();
+  const barbeiroEncontrado = equipe.find(b => b.nome.trim().toLowerCase() === nomeInput);
+
+  if (!barbeiroEncontrado) {
+    mensagem("Barbeiro não encontrado! Verifique o nome.");
+    return;
+  }
+
   const senhaCorreta = barbeiroEncontrado.senha || "123";
 
-  if (senhaInformada === senhaCorreta) {
+  if (senhaInput === senhaCorreta) {
     barbeiroLogadoNome = barbeiroEncontrado.nome;
+    document.getElementById("login-nome-barbeiro").value = "";
+    document.getElementById("login-senha-barbeiro").value = "";
     abrirTela("painel-barbeiro");
     mensagem(`Bem-vindo, ${barbeiroEncontrado.nome}!`);
-  } else if (senhaInformada !== null) {
+  } else {
     mensagem("Senha incorreta!");
   }
 };
@@ -1058,7 +1077,7 @@ function renderizarPainelBarbeiro() {
   document.getElementById("nome-barbeiro-logado").textContent = `Profissional: ${barbeiroLogadoNome}`;
   const caixa = document.getElementById("lista-agendamentos-barbeiro");
   const reservas = reservasCache
-    .filter(r => r.barbeiro === barbeiroLogadoNome)
+    .filter(r => r.barbeiro.trim().toLowerCase() === barbeiroLogadoNome.trim().toLowerCase())
     .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
 
   caixa.innerHTML = "";
@@ -1081,7 +1100,7 @@ function renderizarAdmin() {
   document.getElementById("kpi-qtd").textContent = reservas.length;
 
   const equipe = lerBarbeiros().map(b => b.nome);
-  const totais = equipe.map(b => reservas.filter(r => r.barbeiro === b).reduce((s, r) => s + r.preco, 0));
+  const totais = equipe.map(b => reservas.filter(r => r.barbeiro.trim().toLowerCase() === b.trim().toLowerCase()).reduce((s, r) => s + r.preco, 0));
   const maxVal = Math.max(...totais, 100);
 
   let svg = `<svg width="100%" height="145" viewBox="0 0 360 145">`;
