@@ -88,8 +88,46 @@ button:active { transform: scale(0.97); }
   height: 40px;
   display: grid;
   place-items: center;
+  position: relative;
 }
 .icone-btn:hover { border-color: var(--gold); }
+
+/* Menu Flutuante do Bonequinho */
+.menu-usuario {
+  position: absolute;
+  top: 60px;
+  right: 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 210px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+  z-index: 100;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+.menu-usuario.oculta { display: none; }
+.menu-usuario button {
+  width: 100%;
+  background: none;
+  border: 0;
+  color: var(--text-main);
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.menu-usuario button:last-child { border-bottom: none; }
+.menu-usuario button:hover { background: #1a2640; color: var(--gold); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 main { padding: 18px; }
 
@@ -331,7 +369,7 @@ main { padding: 18px; }
   backdrop-filter: blur(12px);
   border-top: 1px solid var(--border);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   z-index: 20;
 }
 .nav button {
@@ -384,7 +422,17 @@ main { padding: 18px; }
 
 <header class="topo">
   <div class="logo"><i data-lucide="scissors" style="color:var(--gold)"></i> BARBER <span>AGENDA</span></div>
-  <button class="icone-btn" onclick="abrirTela('perfil')" title="Meu Perfil"><i data-lucide="user"></i></button>
+  
+  <!-- BOTÃO DO BONEQUINHO COM MENU FLUTUANTE -->
+  <div style="position:relative;">
+    <button class="icone-btn" onclick="toggleMenuUsuario(event)" title="Menu do Usuário"><i data-lucide="user"></i></button>
+    
+    <div id="menu-usuario" class="menu-usuario oculta">
+      <button onclick="abrirTela('perfil'); fecharMenuUsuario()"><i data-lucide="user-check" size="16"></i> Meu Perfil</button>
+      <button onclick="abrirTela('inicio'); fecharMenuUsuario()"><i data-lucide="users" size="16"></i> Barbeiros do Salão</button>
+      <button onclick="solicitarSenhaAdmin()"><i data-lucide="shield-check" size="16"></i> Login Admin</button>
+    </div>
+  </div>
 </header>
 
 <main>
@@ -403,7 +451,7 @@ main { padding: 18px; }
   <h2 class="titulo">Acesso rápido</h2>
   <div class="atalhos">
     <button class="atalho" onclick="abrirTela('reservas')"><i data-lucide="calendar-check"></i>Agenda</button>
-    <button class="atalho" onclick="abrirTela('admin')"><i data-lucide="bar-chart-3"></i>Gráficos</button>
+    <button class="atalho" onclick="solicitarSenhaAdmin()"><i data-lucide="bar-chart-3"></i>Painel</button>
     <button class="atalho" onclick="copiarPix()"><i data-lucide="qr-code"></i>Chave Pix</button>
     <button class="atalho" onclick="abrirTela('perfil')"><i data-lucide="user-cog"></i>Perfil</button>
   </div>
@@ -495,9 +543,12 @@ main { padding: 18px; }
 
 <!-- TELA PAINEL & GRÁFICOS (ADMIN) -->
 <section id="admin" class="tela oculta">
-  <h2 class="titulo">Desempenho & Agenda Geral</h2>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2 class="titulo" style="margin:0">Painel do Administrador</h2>
+    <button class="btn-sec" onclick="abrirTela('inicio')">Sair do Admin</button>
+  </div>
   
-  <div class="kpi-grid">
+  <div class="kpi-grid" style="margin-top:14px">
     <div class="kpi-card">
       <small>Receita Total (Confirmada)</small>
       <strong id="kpi-receita">R$ 0,00</strong>
@@ -538,7 +589,6 @@ main { padding: 18px; }
   <button class="ativo" data-tela="inicio" onclick="abrirTela('inicio')"><i data-lucide="home" size="20"></i>Início</button>
   <button data-tela="agendar" onclick="abrirTela('agendar')"><i data-lucide="calendar-plus" size="20"></i>Agendar</button>
   <button data-tela="reservas" onclick="abrirTela('reservas')"><i data-lucide="clock" size="20"></i>Meus</button>
-  <button data-tela="admin" onclick="abrirTela('admin')"><i data-lucide="bar-chart-2" size="20"></i>Painel</button>
   <button data-tela="perfil" onclick="abrirTela('perfil')"><i data-lucide="user" size="20"></i>Perfil</button>
 </nav>
 </div>
@@ -568,13 +618,41 @@ const horarios = ["09:00","09:30","10:00","10:30","11:00","11:30","14:00","14:30
 let horarioEscolhido = "";
 let reservasCache = [];
 
+// Menu do Bonequinho
+window.toggleMenuUsuario = function(event) {
+  event.stopPropagation();
+  const menu = document.getElementById("menu-usuario");
+  menu.classList.toggle("oculta");
+};
+
+window.fecharMenuUsuario = function() {
+  document.getElementById("menu-usuario").classList.add("oculta");
+};
+
+// Fecha o menu ao clicar fora
+window.addEventListener("click", () => {
+  const menu = document.getElementById("menu-usuario");
+  if (menu) menu.classList.add("oculta");
+});
+
+// Validação da senha do Admin
+window.solicitarSenhaAdmin = function() {
+  fecharMenuUsuario();
+  const senha = prompt("Digite a senha do Administrador:");
+  if (senha === "admin123") {
+    abrirTela("admin");
+    mensagem("Bem-vindo ao Painel Administrativo!");
+  } else if (senha !== null) {
+    mensagem("Senha incorreta!");
+  }
+};
+
 // Ouve mudanças no Firestore em tempo real
 db.collection("reservas").onSnapshot((snapshot) => {
   reservasCache = [];
   snapshot.forEach((doc) => {
     reservasCache.push({ firestoreId: doc.id, ...doc.data() });
   });
-  // Atualiza as telas ativas automaticamente caso dados mudem na nuvem
   const telaAtual = document.querySelector(".tela:not(.oculta)").id;
   if (telaAtual === "agendar") mostrarHorarios();
   if (telaAtual === "reservas") mostrarReservasCliente();
@@ -604,9 +682,12 @@ window.copiarPix = function() {
 window.abrirTela = function(id) {
   document.querySelectorAll(".tela").forEach(t => t.classList.add("oculta"));
   document.getElementById(id).classList.remove("oculta");
+  
+  // Atualiza nav inferior se a tela pertencer a ela
   document.querySelectorAll(".nav button").forEach(b => {
     b.classList.toggle("ativo", b.dataset.tela === id);
   });
+
   if (id === "agendar") {
     preencherDadosCliente();
     mostrarHorarios();
