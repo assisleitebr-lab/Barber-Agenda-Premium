@@ -264,6 +264,20 @@ main { padding: 18px; }
 .barbeiro strong { font-size: 13px; display: block; }
 .barbeiro small { display: flex; align-items: center; gap: 4px; color: var(--gold); font-size: 11px; margin-top: 4px; font-weight: 600; }
 
+/* Lista de Barbeiros no Admin */
+.lista-admin-barbeiros { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.admin-barbeiro-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+}
+.admin-barbeiro-info { display: flex; align-items: center; gap: 10px; }
+.admin-barbeiro-info img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
+
 /* Painéis e Formulários */
 .painel {
   background: var(--bg-card);
@@ -474,9 +488,7 @@ main { padding: 18px; }
   </div>
 
   <h2 class="titulo">Nossa equipe</h2>
-  <div class="barbeiros" id="lista-barbeiros-home">
-    <!-- Preenchido dinamicamente -->
-  </div>
+  <div class="barbeiros" id="lista-barbeiros-home"></div>
 
   <h2 class="titulo">Tabela de serviços</h2>
   <div class="painel">
@@ -506,9 +518,7 @@ main { padding: 18px; }
     </select>
 
     <label class="rotulo" for="barbeiro">Profissional</label>
-    <select class="campo" id="barbeiro">
-      <!-- Preenchido dinamicamente -->
-    </select>
+    <select class="campo" id="barbeiro"></select>
 
     <label class="rotulo" for="data">Data</label>
     <input class="campo" id="data" type="date">
@@ -544,9 +554,9 @@ main { padding: 18px; }
     <button class="btn-sec" onclick="abrirTela('inicio')">Sair do Admin</button>
   </div>
   
-  <!-- CADASTRAR BARBEIRO -->
+  <!-- CADASTRAR / GERENCIAR BARBEIROS -->
   <div class="painel" style="margin-top:16px">
-    <strong style="font-size:15px;color:var(--gold);display:block;margin-bottom:10px"><i data-lucide="user-plus" size="16"></i> Cadastrar / Gerenciar Barbeiros</strong>
+    <strong style="font-size:15px;color:var(--gold);display:block;margin-bottom:10px"><i data-lucide="user-plus" size="16"></i> Cadastrar Barbeiro</strong>
     
     <label class="rotulo" for="adm-nome-barbeiro">Nome do Barbeiro</label>
     <input class="campo" id="adm-nome-barbeiro" placeholder="Ex: Carlos Eduardo">
@@ -557,13 +567,16 @@ main { padding: 18px; }
     <label class="rotulo">Foto do Barbeiro</label>
     <div style="display:flex; gap:8px; align-items:center;">
       <input type="file" id="adm-arquivo-foto" accept="image/*" style="display:none" onchange="converterFotoBarbeiro(event)">
-      <button type="button" class="btn-sec" onclick="document.getElementById('adm-arquivo-foto').click()"><i data-lucide="upload" size="15"></i> Escolher Foto do Aparelho</button>
-      <span id="foto-status" style="font-size:11px;color:var(--success)">Foto padrão pronta</span>
+      <button type="button" class="btn-sec" onclick="document.getElementById('adm-arquivo-foto').click()"><i data-lucide="upload" size="15"></i> Escolher do Aparelho</button>
+      <span id="foto-status" style="font-size:11px;color:var(--success)">Nenhuma foto selecionada</span>
     </div>
     
     <input class="campo" id="adm-foto-barbeiro" placeholder="Ou cole o link da foto aqui" style="margin-top:8px">
 
-    <button class="btn btn-largo" onclick="salvarBarbeiro()"><i data-lucide="user-check" size="18"></i> Salvar Barbeiro na Equipe</button>
+    <button class="btn btn-largo" onclick="salvarBarbeiro()"><i data-lucide="user-check" size="18"></i> Adicionar à Equipe</button>
+
+    <h2 class="titulo" style="font-size:15px;margin:20px 0 10px">Barbeiros Cadastrados</h2>
+    <div class="lista-admin-barbeiros" id="lista-admin-barbeiros"></div>
   </div>
 
   <div class="kpi-grid" style="margin-top:14px">
@@ -617,7 +630,6 @@ main { padding: 18px; }
 (function(){
 "use strict";
 
-// CONFIGURAÇÃO DO FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyBGZKFzBlKSR_aBKDIGZSfYYHbGFFv5zJo",
   authDomain: "barbearia-bairro-g3.firebaseapp.com",
@@ -637,7 +649,6 @@ let horarioEscolhido = "";
 let reservasCache = [];
 let fotoTempBase64 = "";
 
-// Equipe padrão caso o localStorage esteja vazio
 const equipePadrao = [
   { nome: "Lucas Silva", especialidade: "★ 4.9 · Degradê", foto: "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&w=400&q=80" },
   { nome: "Rafael Santos", especialidade: "★ 4.8 · Clássico", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" },
@@ -656,6 +667,7 @@ function salvarBarbeirosLocal(equipe) {
   localStorage.setItem("barberEquipe", JSON.stringify(equipe));
   atualizarSelectBarbeiros();
   renderizarBarbeirosHome();
+  renderizarAdminBarbeiros();
 }
 
 function atualizarSelectBarbeiros() {
@@ -678,7 +690,7 @@ function renderizarBarbeirosHome() {
   if (!container) return;
   const equipe = lerBarbeiros();
   container.innerHTML = "";
-  equipe.forEach((b, index) => {
+  equipe.forEach(b => {
     const div = document.createElement("div");
     div.className = "barbeiro";
     div.innerHTML = `
@@ -692,7 +704,44 @@ function renderizarBarbeirosHome() {
   });
 }
 
-// Converter foto escolhida no aparelho para Base64
+function renderizarAdminBarbeiros() {
+  const container = document.getElementById("lista-admin-barbeiros");
+  if (!container) return;
+  const equipe = lerBarbeiros();
+  container.innerHTML = "";
+  if (!equipe.length) {
+    container.innerHTML = '<small style="color:var(--text-muted)">Nenhum barbeiro cadastrado.</small>';
+    return;
+  }
+  equipe.forEach((b, index) => {
+    const item = document.createElement("div");
+    item.className = "admin-barbeiro-item";
+    item.innerHTML = `
+      <div class="admin-barbeiro-info">
+        <img src="${b.foto}" alt="${b.nome}">
+        <div>
+          <strong style="font-size:13px">${b.nome}</strong>
+          <small style="color:var(--gold)">${b.especialidade}</small>
+        </div>
+      </div>
+      <button type="button" class="btn-danger" onclick="excluirBarbeiro(${index})"><i data-lucide="trash-2" size="14"></i> Excluir</button>
+    `;
+    container.appendChild(item);
+  });
+  setTimeout(() => lucide.createIcons(), 0);
+}
+
+window.excluirBarbeiro = function(index) {
+  let equipe = lerBarbeiros();
+  if (equipe.length <= 1) {
+    mensagem("Você precisa manter pelo menos um barbeiro.");
+    return;
+  }
+  equipe.splice(index, 1);
+  salvarBarbeirosLocal(equipe);
+  mensagem("Barbeiro excluído com sucesso!");
+};
+
 window.converterFotoBarbeiro = function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -700,7 +749,7 @@ window.converterFotoBarbeiro = function(event) {
   reader.onload = function(e) {
     fotoTempBase64 = e.target.result;
     document.getElementById("adm-foto-barbeiro").value = "[Foto carregada do arquivo]";
-    document.getElementById("foto-status").textContent = "Foto carregada com sucesso!";
+    document.getElementById("foto-status").textContent = "Foto carregada!";
   };
   reader.readAsDataURL(file);
 };
@@ -715,25 +764,27 @@ window.salvarBarbeiro = function() {
     return;
   }
 
-  if (!foto) {
-    foto = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80"; // Foto padrão
+  if (!foto || foto === "[Foto carregada do arquivo]") {
+    if (!fotoTempBase64) {
+      foto = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
+    } else {
+      foto = fotoTempBase64;
+    }
   }
 
   const equipe = lerBarbeiros();
   equipe.push({ nome, especialidade, foto });
   salvarBarbeirosLocal(equipe);
 
-  // Limpa campos
   document.getElementById("adm-nome-barbeiro").value = "";
   document.getElementById("adm-esp-barbeiro").value = "";
   document.getElementById("adm-foto-barbeiro").value = "";
   fotoTempBase64 = "";
-  document.getElementById("foto-status").textContent = "Cadastrado com sucesso!";
+  document.getElementById("foto-status").textContent = "Nenhuma foto selecionada";
 
   mensagem(`Barbeiro ${nome} cadastrado com sucesso!`);
 };
 
-// Menu do Bonequinho
 window.toggleMenuUsuario = function(event) {
   event.stopPropagation();
   const menu = document.getElementById("menu-usuario");
@@ -760,7 +811,6 @@ window.solicitarSenhaAdmin = function() {
   }
 };
 
-// Sincronização em tempo real com Firebase
 db.collection("reservas").onSnapshot((snapshot) => {
   reservasCache = [];
   snapshot.forEach((doc) => {
@@ -805,7 +855,10 @@ window.abrirTela = function(id) {
     mostrarHorarios();
   }
   if (id === "reservas") mostrarReservasCliente();
-  if (id === "admin") renderizarAdmin();
+  if (id === "admin") {
+    renderizarAdmin();
+    renderizarAdminBarbeiros();
+  }
   window.scrollTo(0, 0);
 };
 
@@ -1029,6 +1082,7 @@ document.getElementById("telefone-perfil").value = perfilSalvo.telefone || "";
 atualizarPreco();
 renderizarBarbeirosHome();
 atualizarSelectBarbeiros();
+renderizarAdminBarbeiros();
 mostrarHorarios();
 lucide.createIcons();
 
