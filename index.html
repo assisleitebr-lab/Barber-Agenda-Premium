@@ -201,6 +201,7 @@ main { padding: 18px; }
   box-shadow: none;
   padding: 9px 14px;
   font-size: 12px;
+  border-radius: 10px;
 }
 .btn-whatsapp {
   background: #10b981;
@@ -493,6 +494,7 @@ main { padding: 18px; }
     <div id="menu-usuario" class="menu-usuario oculta">
       <button onclick="abrirTela('perfil'); fecharMenuUsuario()"><i data-lucide="user-check" size="16"></i> Meu Perfil</button>
       <button onclick="abrirTela('inicio'); fecharMenuUsuario()"><i data-lucide="users" size="16"></i> Barbeiros do Salão</button>
+      <button onclick="solicitarLoginBarbeiro()"><i data-lucide="scissors" size="16"></i> Login Barbeiro</button>
       <button onclick="solicitarSenhaAdmin()"><i data-lucide="shield-check" size="16"></i> Login Admin</button>
     </div>
   </div>
@@ -578,6 +580,18 @@ main { padding: 18px; }
   <div id="lista-reservas"></div>
 </section>
 
+<!-- TELA PAINEL DO BARBEIRO -->
+<section id="painel-barbeiro" class="tela oculta">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <h2 class="titulo" style="margin:0">Painel do Barbeiro</h2>
+      <small id="nome-barbeiro-logado" style="color:var(--gold)"></small>
+    </div>
+    <button class="btn-sec" onclick="abrirTela('inicio')">Sair</button>
+  </div>
+  <div id="lista-agendamentos-barbeiro" style="margin-top:14px"></div>
+</section>
+
 <!-- TELA PAINEL & GRÁFICOS (ADMIN) -->
 <section id="admin" class="tela oculta">
   <div style="display:flex;justify-content:space-between;align-items:center">
@@ -594,6 +608,9 @@ main { padding: 18px; }
 
     <label class="rotulo" for="adm-esp-barbeiro">Especialidade / Avaliação</label>
     <input class="campo" id="adm-esp-barbeiro" placeholder="Ex: ★ 5.0 · Barba & Cabelo">
+
+    <label class="rotulo" for="adm-senha-barbeiro">Senha de Acesso do Barbeiro</label>
+    <input class="campo" id="adm-senha-barbeiro" type="password" placeholder="Ex: 123456">
 
     <label class="rotulo">Foto do Barbeiro</label>
     <div style="display:flex; gap:8px; align-items:center;">
@@ -679,11 +696,12 @@ const horarios = ["09:00","09:30","10:00","10:30","11:00","11:30","14:00","14:30
 let horarioEscolhido = "";
 let reservasCache = [];
 let fotoTempBase64 = "";
+let barbeiroLogadoNome = "";
 
 const equipePadrao = [
-  { nome: "Lucas Silva", especialidade: "★ 4.9 · Degradê", foto: "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&w=400&q=80" },
-  { nome: "Rafael Santos", especialidade: "★ 4.8 · Clássico", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" },
-  { nome: "Diego Almeida", especialidade: "★ 4.9 · Barba", foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" }
+  { nome: "Lucas Silva", especialidade: "★ 4.9 · Degradê", senha: "123", foto: "https://images.unsplash.com/photo-1583195764036-6dc248ac07d9?auto=format&fit=crop&w=400&q=80" },
+  { nome: "Rafael Santos", especialidade: "★ 4.8 · Clássico", senha: "123", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" },
+  { nome: "Diego Almeida", especialidade: "★ 4.9 · Barba", senha: "123", foto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" }
 ];
 
 function lerBarbeiros() {
@@ -752,7 +770,7 @@ function renderizarAdminBarbeiros() {
         <img src="${b.foto}" alt="${b.nome}">
         <div>
           <strong style="font-size:13px">${b.nome}</strong>
-          <small style="color:var(--gold)">${b.especialidade}</small>
+          <small style="color:var(--gold)">${b.especialidade} (Senha: ${b.senha || '123'})</small>
         </div>
       </div>
       <button type="button" class="btn-danger" onclick="excluirBarbeiro(${index})"><i data-lucide="trash-2" size="14"></i> Excluir</button>
@@ -788,6 +806,7 @@ window.converterFotoBarbeiro = function(event) {
 window.salvarBarbeiro = function() {
   const nome = document.getElementById("adm-nome-barbeiro").value.trim();
   const especialidade = document.getElementById("adm-esp-barbeiro").value.trim() || "★ 5.0 · Profissional";
+  const senha = document.getElementById("adm-senha-barbeiro").value.trim() || "123";
   let foto = fotoTempBase64 || document.getElementById("adm-foto-barbeiro").value.trim();
 
   if (!nome) {
@@ -804,11 +823,12 @@ window.salvarBarbeiro = function() {
   }
 
   const equipe = lerBarbeiros();
-  equipe.push({ nome, especialidade, foto });
+  equipe.push({ nome, especialidade, senha, foto });
   salvarBarbeirosLocal(equipe);
 
   document.getElementById("adm-nome-barbeiro").value = "";
   document.getElementById("adm-esp-barbeiro").value = "";
+  document.getElementById("adm-senha-barbeiro").value = "";
   document.getElementById("adm-foto-barbeiro").value = "";
   fotoTempBase64 = "";
   document.getElementById("foto-status").textContent = "Nenhuma foto selecionada";
@@ -831,6 +851,31 @@ window.addEventListener("click", () => {
   if (menu) menu.classList.add("oculta");
 });
 
+window.solicitarLoginBarbeiro = function() {
+  fecharMenuUsuario();
+  const nomeBarbeiro = prompt("Digite o seu nome de Barbeiro:");
+  if (!nomeBarbeiro) return;
+  
+  const equipe = lerBarbeiros();
+  const barbeiroEncontrado = equipe.find(b => b.nome.toLowerCase() === nomeBarbeiro.toLowerCase());
+  
+  if (!barbeiroEncontrado) {
+    mensagem("Barbeiro não encontrado na equipe!");
+    return;
+  }
+
+  const senhaInformada = prompt(`Digite a senha para ${barbeiroEncontrado.nome}:`);
+  const senhaCorreta = barbeiroEncontrado.senha || "123";
+
+  if (senhaInformada === senhaCorreta) {
+    barbeiroLogadoNome = barbeiroEncontrado.nome;
+    abrirTela("painel-barbeiro");
+    mensagem(`Bem-vindo, ${barbeiroEncontrado.nome}!`);
+  } else if (senhaInformada !== null) {
+    mensagem("Senha incorreta!");
+  }
+};
+
 window.solicitarSenhaAdmin = function() {
   fecharMenuUsuario();
   const senha = prompt("Digite a senha do Administrador:");
@@ -851,6 +896,7 @@ db.collection("reservas").onSnapshot((snapshot) => {
   if (telaAtual === "agendar") mostrarHorarios();
   if (telaAtual === "reservas") mostrarReservasCliente();
   if (telaAtual === "admin") renderizarAdmin();
+  if (telaAtual === "painel-barbeiro") renderizarPainelBarbeiro();
 }, (error) => {
   console.error("Erro ao sincronizar com Firebase:", error);
 });
@@ -896,6 +942,9 @@ window.abrirTela = function(id) {
   if (id === "admin") {
     renderizarAdmin();
     renderizarAdminBarbeiros();
+  }
+  if (id === "painel-barbeiro") {
+    renderizarPainelBarbeiro();
   }
   window.scrollTo(0, 0);
 };
@@ -1005,6 +1054,25 @@ function mostrarReservasCliente() {
   });
 }
 
+function renderizarPainelBarbeiro() {
+  document.getElementById("nome-barbeiro-logado").textContent = `Profissional: ${barbeiroLogadoNome}`;
+  const caixa = document.getElementById("lista-agendamentos-barbeiro");
+  const reservas = reservasCache
+    .filter(r => r.barbeiro === barbeiroLogadoNome)
+    .sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
+
+  caixa.innerHTML = "";
+
+  if (!reservas.length) {
+    caixa.innerHTML = '<div class="painel" style="text-align:center;color:var(--text-muted)">Nenhum agendamento para o seu perfil no momento.</div>';
+    return;
+  }
+
+  reservas.forEach(r => {
+    caixa.appendChild(criarCardReserva(r, true));
+  });
+}
+
 function renderizarAdmin() {
   const reservas = [...reservasCache].sort((a, b) => (a.data + a.horario).localeCompare(b.data + b.horario));
   const receita = reservas.reduce((acc, r) => acc + (r.pago ? r.preco : 0), 0);
@@ -1047,7 +1115,7 @@ function renderizarAdmin() {
   reservas.forEach(r => listaAdmin.appendChild(criarCardReserva(r, true)));
 }
 
-function criarCardReserva(r, isAdmin) {
+function criarCardReserva(r, isGestor) {
   const card = document.createElement("div");
   card.className = "reserva";
 
@@ -1066,9 +1134,9 @@ function criarCardReserva(r, isAdmin) {
     </div>
     <p><i data-lucide="calendar" size="14"></i> ${r.data.split("-").reverse().join("/")} às ${r.horario}</p>
     <p><i data-lucide="scissors" size="14"></i> Barbeiro: ${r.barbeiro}</p>
-    ${isAdmin ? `<p><i data-lucide="user" size="14"></i> Cliente: ${r.nome} (${r.telefone})</p>` : ""}
+    ${isGestor ? `<p><i data-lucide="user" size="14"></i> Cliente: ${r.nome} (${r.telefone})</p>` : ""}
     <div class="reserva-acoes">
-      ${isAdmin ? `<button class="btn-sec" onclick="alternarPagamento('${r.firestoreId}', ${r.pago})">${r.pago ? "Marcar Pendente" : "Confirmar Pagamento"}</button>` : ""}
+      ${isGestor ? `<button class="btn-sec" onclick="alternarPagamento('${r.firestoreId}', ${r.pago})">${r.pago ? "Marcar Pendente" : "Confirmar Pagamento"}</button>` : ""}
       <button class="btn-chat" onclick="abrirChatCliente('${r.telefone}', '${r.nome}')"><i data-lucide="message-circle" size="14"></i> Chat WhatsApp</button>
       <button class="btn-danger" onclick="cancelarReserva('${r.firestoreId}')"><i data-lucide="trash-2" size="14"></i> Excluir</button>
     </div>
