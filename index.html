@@ -19,17 +19,17 @@
 
 <style>
 :root {
-  --bg-body: #0a060f;
-  --bg-app: rgba(26, 15, 38, 0.90);
-  --bg-card: rgba(38, 22, 54, 0.85);
-  --bg-input: rgba(18, 10, 26, 0.92);
-  --border: rgba(236, 72, 153, 0.25);
-  --primary: #db2777;
-  --primary-light: #f472b6;
-  --primary-grad: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
-  --accent: #10b981;
-  --text-main: #fdf2f8;
-  --text-muted: #fbcfe8;
+  --bg-body: #090f1f;
+  --bg-app: rgba(15, 23, 42, 0.94);
+  --bg-card: rgba(30, 41, 59, 0.90);
+  --bg-input: rgba(15, 23, 42, 0.94);
+  --border: rgba(167, 139, 250, 0.28);
+  --primary: #7c3aed;
+  --primary-light: #c4b5fd;
+  --primary-grad: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  --accent: #2dd4bf;
+  --text-main: #f8fafc;
+  --text-muted: #cbd5e1;
   --success: #34d399;
   --warning: #fbbf24;
   --danger: #f87171;
@@ -40,7 +40,7 @@
 body {
   margin: 0;
   background-color: var(--bg-body);
-  background-image: linear-gradient(to bottom, rgba(10, 6, 15, 0.82), rgba(10, 6, 15, 0.94)),
+  background-image: linear-gradient(to bottom, rgba(9, 15, 31, 0.82), rgba(9, 15, 31, 0.95)),
                     url('https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1400&q=80');
   background-size: cover;
   background-position: center;
@@ -62,7 +62,7 @@ button:active { transform: scale(0.97); }
   -webkit-backdrop-filter: blur(10px);
   padding-bottom: 90px;
   position: relative;
-  box-shadow: 0 25px 50px -12px rgba(219, 39, 119, 0.25);
+  box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.28);
 }
 
 /* Topo */
@@ -72,7 +72,7 @@ button:active { transform: scale(0.97); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(26, 15, 38, 0.9);
+  background: rgba(15, 23, 42, 0.94);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   position: sticky;
@@ -88,7 +88,7 @@ button:active { transform: scale(0.97); }
   gap: 8px;
   color: var(--text-main);
 }
-.logo span { color: var(--primary-light); text-shadow: 0 0 12px rgba(244, 114, 182, 0.6); }
+.logo span { color: var(--primary-light); text-shadow: 0 0 12px rgba(196, 181, 253, 0.65); }
 .icone-btn {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -100,14 +100,14 @@ button:active { transform: scale(0.97); }
   place-items: center;
   position: relative;
 }
-.icone-btn:hover { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(244,114,182,0.3); }
+.icone-btn:hover { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(196,181,253,0.3); }
 
 /* Menu Flutuante do Bonequinho */
 .menu-usuario {
   position: absolute;
   top: 60px;
   right: 18px;
-  background: #261636;
+  background: #1e293b;
   border: 1px solid var(--border);
   border-radius: 16px;
   width: 220px;
@@ -132,7 +132,7 @@ button:active { transform: scale(0.97); }
   border-bottom: 1px solid var(--border);
 }
 .menu-usuario button:last-child { border-bottom: none; }
-.menu-usuario button:hover { background: #3b2054; color: var(--primary-light); }
+.menu-usuario button:hover { background: #334155; color: var(--primary-light); }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-8px); }
@@ -151,10 +151,10 @@ main { padding: 18px; }
   justify-content: flex-end;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(244, 114, 182, 0.4);
-  background: linear-gradient(to top, rgba(10, 6, 15, 0.92) 10%, rgba(26, 15, 38, 0.55) 55%, rgba(26, 15, 38, 0.25) 100%),
+  border: 1px solid rgba(196, 181, 253, 0.45);
+  background: linear-gradient(to top, rgba(9, 15, 31, 0.94) 10%, rgba(15, 23, 42, 0.58) 55%, rgba(15, 23, 42, 0.25) 100%),
               url('https://images.unsplash.com/photo-1632345031435-877ff6c9d7d9?auto=format&fit=crop&w=1000&q=80') center/cover;
-  box-shadow: 0 10px 30px rgba(219, 39, 119, 0.2);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.24);
 }
 .hero-conteudo {
   position: relative;
@@ -174,7 +174,7 @@ main { padding: 18px; }
 .hero-titulo-principal span { color: var(--primary-light); text-shadow: 0 0 15px rgba(244, 114, 182, 0.8); }
 .hero p {
   font-size: 12px;
-  color: #fce7f3;
+  color: #e2e8f0;
   margin: 0 0 16px 0;
   letter-spacing: 0.5px;
 }
@@ -192,7 +192,7 @@ main { padding: 18px; }
   justify-content: center;
   gap: 8px;
   font-size: 14px;
-  box-shadow: 0 8px 25px -6px rgba(244, 114, 182, 0.6);
+  box-shadow: 0 8px 25px -6px rgba(196, 181, 253, 0.65);
 }
 .btn-largo { width: 100%; margin-top: 16px; }
 .btn-sec {
@@ -205,7 +205,7 @@ main { padding: 18px; }
   border-radius: 10px;
 }
 .btn-whatsapp {
-  background: #10b981;
+  background: #0f9f8f;
   color: #ffffff;
   border: 0;
   border-radius: 10px;
@@ -215,12 +215,12 @@ main { padding: 18px; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 15px rgba(45, 212, 191, 0.35);
 }
 .btn-chat {
-  background: rgba(16, 185, 129, 0.2);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(45, 212, 191, 0.14);
+  color: #5eead4;
+  border: 1px solid rgba(45, 212, 191, 0.35);
   border-radius: 10px;
   font-weight: 700;
   padding: 8px 12px;
@@ -230,9 +230,9 @@ main { padding: 18px; }
   gap: 6px;
 }
 .btn-danger {
-  background: rgba(248, 113, 113, 0.2);
-  color: #fca5a5;
-  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgba(248, 113, 113, 0.14);
+  color: #fda4af;
+  border: 1px solid rgba(248, 113, 113, 0.35);
   box-shadow: none;
   padding: 8px 12px;
   font-size: 12px;
@@ -270,7 +270,7 @@ main { padding: 18px; }
   gap: 8px;
 }
 .atalho i { color: var(--primary-light); }
-.atalho:hover { border-color: var(--primary-light); background: rgba(59, 32, 84, 0.7); box-shadow: 0 0 12px rgba(219,39,119,0.2); }
+.atalho:hover { border-color: var(--primary-light); background: rgba(51, 65, 85, 0.78); box-shadow: 0 0 12px rgba(124,58,237,0.22); }
 
 /* Profissionais */
 .barbeiros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -283,13 +283,13 @@ main { padding: 18px; }
   transition: transform 0.2s;
   position: relative;
 }
-.barbeiro:hover { transform: translateY(-3px); border-color: var(--primary-light); box-shadow: 0 5px 15px rgba(219,39,119,0.25); }
+.barbeiro:hover { transform: translateY(-3px); border-color: var(--primary-light); box-shadow: 0 5px 15px rgba(124,58,237,0.25); }
 .foto-barbeiro {
   height: 95px;
   width: 100%;
   object-fit: cover;
   display: block;
-  background: #2d1b3f;
+  background: #334155;
 }
 .barbeiro-info { padding: 10px; }
 .barbeiro strong { font-size: 13px; display: block; color: var(--text-main); }
@@ -331,7 +331,7 @@ main { padding: 18px; }
   outline: none;
   font-size: 14px;
 }
-.campo:focus { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(244,114,182,0.3); }
+.campo:focus { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(196,181,253,0.3); }
 
 /* Horários */
 .horarios { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -348,7 +348,7 @@ main { padding: 18px; }
   background: var(--primary-grad);
   color: #ffffff;
   border-color: var(--primary-light);
-  box-shadow: 0 0 15px rgba(244,114,182,0.5);
+  box-shadow: 0 0 15px rgba(167,139,250,0.42);
 }
 .horario:disabled { opacity: 0.25; text-decoration: line-through; cursor: not-allowed; }
 
@@ -383,8 +383,8 @@ main { padding: 18px; }
   border-radius: 20px;
   text-transform: uppercase;
 }
-.status-pendente { background: rgba(251, 191, 36, 0.2); color: #fde047; border: 1px solid rgba(251, 191, 36, 0.4); }
-.status-pago { background: rgba(52, 211, 153, 0.2); color: #6ee7b7; border: 1px solid rgba(52, 211, 153, 0.4); }
+.status-pendente { background: rgba(251, 191, 36, 0.2); color: #fcd34d; border: 1px solid rgba(251, 191, 36, 0.4); }
+.status-pago { background: rgba(52, 211, 153, 0.2); color: #5eead4; border: 1px solid rgba(52, 211, 153, 0.4); }
 .reserva-acoes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; align-items: center; }
 
 /* Dashboard & Gráfico */
@@ -412,8 +412,8 @@ main { padding: 18px; }
 
 /* WhatsApp Box */
 .wp-box {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px dashed rgba(16, 185, 129, 0.5);
+  background: rgba(45, 212, 191, 0.10);
+  border: 1px dashed rgba(45, 212, 191, 0.45);
   border-radius: 12px;
   padding: 12px;
   margin-top: 12px;
@@ -434,7 +434,7 @@ main { padding: 18px; }
   width: 100%;
   max-width: 500px;
   height: 74px;
-  background: rgba(26, 15, 38, 0.95);
+  background: rgba(15, 23, 42, 0.97);
   backdrop-filter: blur(14px);
   border-top: 1px solid var(--border);
   display: grid;
@@ -453,14 +453,14 @@ main { padding: 18px; }
   justify-content: center;
   gap: 5px;
 }
-.nav button.ativo { color: var(--primary-light); text-shadow: 0 0 10px rgba(244,114,182,0.6); }
+.nav button.ativo { color: var(--primary-light); text-shadow: 0 0 10px rgba(196,181,253,0.55); }
 
 #mensagem {
   position: fixed;
   bottom: 88px;
   left: 50%;
   transform: translateX(-50%);
-  background: #261636;
+  background: #1e293b;
   border: 1px solid var(--primary-light);
   color: #fff;
   border-radius: 12px;
@@ -470,7 +470,7 @@ main { padding: 18px; }
   z-index: 50;
   max-width: 90%;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(219,39,119,0.4);
+  box-shadow: 0 10px 25px rgba(124,58,237,0.35);
 }
 
 @media (min-width: 540px) {
@@ -1205,15 +1205,15 @@ function renderizarAdmin() {
     const y = 105 - barHeight;
     svg += `
       <rect x="${x}" y="${y}" width="50" height="${barHeight}" rx="8" fill="url(#primaryGrad)" />
-      <text x="${x + 25}" y="${y - 7}" fill="#fdf2f8" font-size="11" font-weight="bold" text-anchor="middle">R$${val}</text>
-      <text x="${x + 25}" y="128" fill="#fbcfe8" font-size="11" text-anchor="middle">${nome.split(" ")[0]}</text>
+      <text x="${x + 25}" y="${y - 7}" fill="#f8fafc" font-size="11" font-weight="bold" text-anchor="middle">R$${val}</text>
+      <text x="${x + 25}" y="128" fill="#cbd5e1" font-size="11" text-anchor="middle">${nome.split(" ")[0]}</text>
     `;
   });
   svg += `
     <defs>
       <linearGradient id="primaryGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#f472b6"/>
-        <stop offset="100%" stop-color="#db2777"/>
+        <stop offset="0%" stop-color="#a78bfa"/>
+        <stop offset="100%" stop-color="#7c3aed"/>
       </linearGradient>
     </defs>
   `;
