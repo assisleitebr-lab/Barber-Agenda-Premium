@@ -851,7 +851,7 @@ window.converterFotoBarbeiro = function(event) {
       contexto.fillRect(0, 0, largura, altura);
       contexto.drawImage(imagem, 0, 0, largura, altura);
 
-      fotoTempBase64 = canvas.toDataURL("image/jpeg", 0.65);
+      fotoTempBase64 = canvas.toDataURL("https://acdn-us.mitiendanube.com/stores/002/908/593/products/nao-dar-furo-na-manicure-esmalte-faby-cardoso-nati-2-309dbc1009d1087a2017291164690008-1024-1024.webp", 0.65);
       document.getElementById("adm-foto-barbeiro").value = "[Foto carregada do aparelho]";
       if (status) status.textContent = "Foto pronta para salvar!";
     };
