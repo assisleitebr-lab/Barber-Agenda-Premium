@@ -1,71 +1,62 @@
-const CACHE_NAME = "barber-agenda-v2";
 
-const ARQUIVOS = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
-];
+const CACHE_NAME = "nails-agenda-v2";
 
-self.addEventListener("install", function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(ARQUIVOS);
-      })
-      .then(function() {
-        return self.skipWaiting();
-      })
-  );
+// Instala o Service Worker sem tentar carregar arquivos inexistentes.
+self.addEventListener("install", (event) => {
+  self.skipWaiting();
 });
 
-self.addEventListener("activate", function(event) {
+// Ativa e limpa caches antigos.
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(function(chaves) {
+    caches.keys().then((nomes) => {
       return Promise.all(
-        chaves.map(function(chave) {
-          if (chave !== CACHE_NAME) {
-            return caches.delete(chave);
-          }
-        })
+        nomes
+          .filter((nome) => nome !== CACHE_NAME)
+          .map((nome) => caches.delete(nome))
       );
-    }).then(function() {
-      return self.clients.claim();
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
-self.addEventListener("fetch", function(event) {
-  if (event.request.method !== "GET") {
-    return;
-  }
+// Busca arquivos pela internet e guarda somente respostas válidas.
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
 
   const url = new URL(event.request.url);
 
-  if (url.origin !== self.location.origin) {
-    return;
-  }
+  // Não intercepta arquivos de outros domínios.
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request).then(function(respostaCache) {
-      if (respostaCache) {
-        return respostaCache;
-      }
-
-      return fetch(event.request).then(function(resposta) {
+    fetch(event.request)
+      .then((resposta) => {
         if (resposta && resposta.ok) {
           const copia = resposta.clone();
 
-          caches.open(CACHE_NAME).then(function(cache) {
+          caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, copia);
           });
         }
 
         return resposta;
-      }).catch(function() {
-        return caches.match("./index.html");
-      });
-    })
+      })
+      .catch(async () => {
+        const arquivoSalvo = await caches.match(event.request);
+
+        if (arquivoSalvo) return arquivoSalvo;
+
+        if (event.request.mode === "navigate") {
+          const pagina = await caches.match("./index.html");
+          if (pagina) return pagina;
+        }
+
+        return new Response("Você está sem conexão com a internet.", {
+          status: 503,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8"
+          }
+        });
+      })
   );
 });
