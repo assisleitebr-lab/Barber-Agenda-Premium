@@ -733,10 +733,18 @@ function lerBarbeiros() {
 }
 
 function salvarBarbeirosLocal(equipe) {
-  localStorage.setItem("nailsEquipe", JSON.stringify(equipe));
-  atualizarSelectBarbeiros();
-  renderizarBarbeirosHome();
-  renderizarAdminBarbeiros();
+  try {
+    localStorage.setItem("nailsEquipe", JSON.stringify(equipe));
+    atualizarSelectBarbeiros();
+    renderizarBarbeirosHome();
+    renderizarAdminBarbeiros();
+    if (typeof renderizarAdmin === "function") renderizarAdmin();
+    return true;
+  } catch (erro) {
+    console.error("Não foi possível salvar a equipe:", erro);
+    mensagem("Não foi possível salvar. A foto pode estar muito grande. Escolha uma imagem menor.");
+    return false;
+  }
 }
 
 function atualizarSelectBarbeiros() {
@@ -802,59 +810,106 @@ function renderizarAdminBarbeiros() {
 }
 
 window.excluirBarbeiro = function(index) {
-  let equipe = lerBarbeiros();
+  const equipe = lerBarbeiros();
   if (equipe.length <= 1) {
     mensagem("Você precisa manter pelo menos uma profissional.");
     return;
   }
   equipe.splice(index, 1);
-  salvarBarbeirosLocal(equipe);
-  mensagem("Profissional excluída com sucesso!");
+  if (salvarBarbeirosLocal(equipe)) {
+    mensagem("Profissional excluída com sucesso!");
+  }
 };
 
+// Reduz a foto antes de guardar no navegador, evitando exceder o limite do localStorage.
 window.converterFotoBarbeiro = function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    fotoTempBase64 = e.target.result;
-    document.getElementById("adm-foto-barbeiro").value = "[Foto carregada do arquivo]";
-    document.getElementById("foto-status").textContent = "Foto carregada!";
-  };
-  reader.readAsDataURL(file);
-};
+  const arquivo = event.target.files && event.target.files[0];
+  if (!arquivo) return;
 
-window.salvarBarbeiro = function() {
-  const nome = document.getElementById("adm-nome-barbeiro").value.trim();
-  const especialidade = document.getElementById("adm-esp-barbeiro").value.trim() || "★ 5.0 · Profissional";
-  const senha = document.getElementById("adm-senha-barbeiro").value.trim() || "123";
-  let foto = fotoTempBase64 || document.getElementById("adm-foto-barbeiro").value.trim();
-
-  if (!nome) {
-    mensagem("Digite o nome da profissional.");
+  if (!arquivo.type.startsWith("image/")) {
+    mensagem("Selecione um arquivo de imagem válido.");
+    event.target.value = "";
     return;
   }
 
-  if (!foto || foto === "[Foto carregada do arquivo]") {
-    if (!fotoTempBase64) {
-      foto = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
-    } else {
-      foto = fotoTempBase64;
-    }
+  const status = document.getElementById("foto-status");
+  if (status) status.textContent = "Preparando foto...";
+
+  const leitor = new FileReader();
+  leitor.onload = function(e) {
+    const imagem = new Image();
+    imagem.onload = function() {
+      const limite = 600;
+      const proporcao = Math.min(1, limite / Math.max(imagem.width, imagem.height));
+      const largura = Math.max(1, Math.round(imagem.width * proporcao));
+      const altura = Math.max(1, Math.round(imagem.height * proporcao));
+      const canvas = document.createElement("canvas");
+      canvas.width = largura;
+      canvas.height = altura;
+      const contexto = canvas.getContext("2d");
+      contexto.fillStyle = "#ffffff";
+      contexto.fillRect(0, 0, largura, altura);
+      contexto.drawImage(imagem, 0, 0, largura, altura);
+
+      fotoTempBase64 = canvas.toDataURL("image/jpeg", 0.65);
+      document.getElementById("adm-foto-barbeiro").value = "[Foto carregada do aparelho]";
+      if (status) status.textContent = "Foto pronta para salvar!";
+    };
+    imagem.onerror = function() {
+      fotoTempBase64 = "";
+      if (status) status.textContent = "Não foi possível abrir a imagem";
+      mensagem("Não foi possível processar essa foto. Tente outra imagem.");
+    };
+    imagem.src = e.target.result;
+  };
+  leitor.onerror = function() {
+    if (status) status.textContent = "Erro ao ler a foto";
+    mensagem("Erro ao carregar a foto. Tente novamente.");
+  };
+  leitor.readAsDataURL(arquivo);
+};
+
+window.salvarBarbeiro = function() {
+  const nomeEl = document.getElementById("adm-nome-barbeiro");
+  const especialidadeEl = document.getElementById("adm-esp-barbeiro");
+  const senhaEl = document.getElementById("adm-senha-barbeiro");
+  const fotoEl = document.getElementById("adm-foto-barbeiro");
+  const arquivoEl = document.getElementById("adm-arquivo-foto");
+
+  const nome = nomeEl.value.trim();
+  const especialidade = especialidadeEl.value.trim() || "★ 5.0 · Profissional";
+  const senha = senhaEl.value.trim() || "123";
+  let foto = fotoTempBase64 || fotoEl.value.trim();
+
+  if (!nome) {
+    mensagem("Digite o nome da profissional.");
+    nomeEl.focus();
+    return;
   }
 
   const equipe = lerBarbeiros();
-  equipe.push({ nome, especialidade, senha, foto });
-  
-  salvarBarbeirosLocal(equipe);
-  renderizarAdminBarbeiros();
+  const repetida = equipe.some(b => String(b.nome || "").trim().toLowerCase() === nome.toLowerCase());
+  if (repetida) {
+    mensagem("Já existe uma profissional cadastrada com esse nome.");
+    nomeEl.focus();
+    return;
+  }
 
-  document.getElementById("adm-nome-barbeiro").value = "";
-  document.getElementById("adm-esp-barbeiro").value = "";
-  document.getElementById("adm-senha-barbeiro").value = "";
-  document.getElementById("adm-foto-barbeiro").value = "";
+  if (!foto || foto === "[Foto carregada do aparelho]") {
+    foto = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
+  }
+
+  equipe.push({ nome, especialidade, senha, foto });
+  if (!salvarBarbeirosLocal(equipe)) return;
+
+  nomeEl.value = "";
+  especialidadeEl.value = "";
+  senhaEl.value = "";
+  fotoEl.value = "";
+  if (arquivoEl) arquivoEl.value = "";
   fotoTempBase64 = "";
-  document.getElementById("foto-status").textContent = "Nenhuma foto selecionada";
+  const status = document.getElementById("foto-status");
+  if (status) status.textContent = "Nenhuma foto selecionada";
 
   mensagem(`Profissional ${nome} cadastrada com sucesso!`);
 };
@@ -1073,6 +1128,7 @@ window.confirmarAgendamento = function() {
     const dataFormatada = data.split("-").reverse().join("/");
     const precoFormatado = Number(partes[1]).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
     
+    // Envio automático para o WhatsApp do Administrador Diassis Leite
     const textoWp = `Olá Diassis Leite! Novo agendamento no Nails Agenda:%0a%0a*Cliente:* ${nome}%0a*Serviço:* ${partes[0]} (${precoFormatado})%0a*Profissional:* ${barbeiro}%0a*Data:* ${dataFormatada} às ${horarioEscolhido}%0a*WhatsApp:* ${telefone}`;
     window.open(`https://api.whatsapp.com/send?phone=${NUMERO_ADM}&text=${textoWp}`, '_blank');
 
